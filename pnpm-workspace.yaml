@@ -1,5 +1,6 @@
 packages:
   - packages/*
+ignoreWorkspaceRootCheck: true
 catalogs:
   cli:
     '@antfu/eslint-config': ^4.10.1
