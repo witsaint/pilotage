@@ -1,0 +1,96 @@
+{
+  "name": "pilotage",
+  "type": "module",
+  "version": "0.0.1",
+  "description": "Help your software projects with SDD which you need",
+  "author": "witsaint",
+  "license": "MIT",
+  "keywords": [
+    "SDD",
+    "SPEC DRIVEN DEVELOPMENT",
+    "engineering",
+    "development",
+    "ai",
+    "prd",
+    "workflow"
+  ],
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "build-release": "unbuild",
+    "dev": "unbuild --dev",
+    "lint": "eslint . --cache --cache-location .cache/eslint/main.eslintcache",
+    "test": "run-s test-unit",
+    "test-unit": "vitest run --passWithNoTests",
+    "test-unit-watch": "vitest watch --ui",
+    "test-coverage": "vitest run --coverage",
+    "test-ui": "vitest --ui",
+    "test-debug": "vitest --inspect-brk --no-coverage",
+    "typecheck": "tsc --project ./tsconfig.json --noEmit",
+    "lint-staged-files": "lint-staged --allow-empty",
+    "postinstall": "pnpm build",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "catalog:cli",
+    "@testing-library/jest-dom": "catalog:testing",
+    "@testing-library/user-event": "catalog:testing",
+    "@types/execa": "catalog:testing",
+    "@types/mock-fs": "catalog:testing",
+    "@types/node": "catalog:types",
+    "@types/supertest": "catalog:testing",
+    "@vitest/coverage-v8": "catalog:testing",
+    "@vitest/ui": "catalog:testing",
+    "bumpp": "catalog:cli",
+    "cross-env": "catalog:testing",
+    "dotenv": "catalog:utils",
+    "eslint": "catalog:cli",
+    "execa": "catalog:testing",
+    "lint-staged": "catalog:cli",
+    "mock-fs": "catalog:testing",
+    "npm-run-all": "catalog:utils",
+    "simple-git-hooks": "catalog:cli",
+    "supertest": "catalog:testing",
+    "tinyexec": "catalog:utils",
+    "tsx": "catalog:cli",
+    "typescript": "catalog:cli",
+    "unbuild": "catalog:cli",
+    "vitest": "catalog:testing",
+    "vitest-package-exports": "catalog:testing"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm i --frozen-lockfile --ignore-scripts --offline && npx lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
+  },
+  "vitest": {
+    "environment": "node",
+    "globals": true,
+    "coverage": {
+      "provider": "v8",
+      "reporter": ["text", "json", "html", "lcov"],
+      "reportsDirectory": "./coverage",
+      "include": ["src/**/*.{js,ts}"],
+      "exclude": [
+        "src/**/*.d.ts",
+        "src/**/*.test.{js,ts}",
+        "src/**/*.spec.{js,ts}",
+        "src/**/index.{js,ts}"
+      ],
+      "thresholds": {
+        "global": {
+          "branches": 80,
+          "functions": 80,
+          "lines": 80,
+          "statements": 80
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+# Test commands for CLI testing
+init --name my-project --template basic
+build --output dist --watch
+serve --port 3000 --host localhost
+deploy --env production --region us-east-1
+test --coverage --watch
+lint --fix --format json
+format --write --check

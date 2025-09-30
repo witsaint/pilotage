@@ -1,0 +1,37 @@
+{
+  "users": [
+    {
+      "id": "user-1",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "role": "admin"
+    },
+    {
+      "id": "user-2", 
+      "name": "Jane Smith",
+      "email": "jane@example.com",
+      "role": "user"
+    }
+  ],
+  "config": {
+    "appName": "Test App",
+    "version": "1.0.0",
+    "features": {
+      "auth": true,
+      "logging": true,
+      "metrics": false
+    }
+  },
+  "commands": [
+    {
+      "name": "init",
+      "description": "Initialize project",
+      "args": ["--name", "--template"]
+    },
+    {
+      "name": "build",
+      "description": "Build project",
+      "args": ["--output", "--watch"]
+    }
+  ]
+}
