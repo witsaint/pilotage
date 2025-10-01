@@ -17,6 +17,9 @@
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "pilotage": "./bin/pilotage.mjs"
+  },
   "files": [
     "dist"
   ],
@@ -24,7 +27,7 @@
     "build": "unbuild",
     "build-release": "unbuild",
     "dev": "unbuild --stub",
-    "stub": "pnpm -r run stub",
+    "stub": "pnpm run stub",
     "release": "bumpp && pnpm build-release && pnpm publish --no-git-checks",
     "lint": "eslint . --cache --cache-location .cache/eslint/main.eslintcache",
     "test": "run-s test-unit",
@@ -37,6 +40,10 @@
     "lint-staged-files": "lint-staged --allow-empty",
     "postinstall": "pnpm build",
     "preinstall": "npx only-allow pnpm"
+  },
+  "dependencies": {
+    "lnk": "catalog:",
+    "react": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",

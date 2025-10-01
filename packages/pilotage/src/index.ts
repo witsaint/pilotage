@@ -1,3 +1,3 @@
-export function main(): string {
-  return 'Hello, world!'
-}
+import { renderBanner } from './ui/banner'
+
+renderBanner()

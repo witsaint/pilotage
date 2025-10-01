@@ -1,6 +1,11 @@
 packages:
   - packages/*
 ignoreWorkspaceRootCheck: true
+
+catalog:
+  lnk: ^1.1.0
+  react: ^19.1.1
+
 catalogs:
   cli:
     '@antfu/eslint-config': ^4.10.1
