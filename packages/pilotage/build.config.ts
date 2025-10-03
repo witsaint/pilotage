@@ -16,6 +16,8 @@ export default defineBuildConfig({
     },
     esbuild: {
       minify: !isDev,
+      jsx: 'automatic',
+      jsxImportSource: 'react',
     },
   },
   hooks: {

@@ -26,8 +26,11 @@
   "scripts": {
     "build": "unbuild",
     "build-release": "unbuild",
-    "dev": "unbuild --stub",
-    "stub": "pnpm run stub",
+    "dev": "unbuild --watch",
+    "stub": "unbuild  --stub",
+    "start": "node dist/index.mjs",
+    "start:dev": "tsx src/index.ts",
+    "start:ui": "tsx src/ui/banner.tsx",
     "release": "bumpp && pnpm build-release && pnpm publish --no-git-checks",
     "lint": "eslint . --cache --cache-location .cache/eslint/main.eslintcache",
     "test": "run-s test-unit",
@@ -42,7 +45,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "lnk": "catalog:",
+    "ink": "catalog:",
     "react": "catalog:"
   },
   "devDependencies": {

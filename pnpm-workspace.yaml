@@ -3,7 +3,7 @@ packages:
 ignoreWorkspaceRootCheck: true
 
 catalog:
-  lnk: ^1.1.0
+  ink: ^6.3.1
   react: ^19.1.1
 
 catalogs:
