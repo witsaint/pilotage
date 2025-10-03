@@ -45,6 +45,7 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "gradient-string": "catalog:",
     "ink": "catalog:",
     "react": "catalog:"
   },
