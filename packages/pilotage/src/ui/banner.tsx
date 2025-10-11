@@ -1,5 +1,9 @@
 import process from 'node:process'
 import gradient from 'gradient-string'
+import { render } from 'ink'
+import React from 'react'
+import { getLayoutConfig, getScreenSizeCategory, getSmartResponsiveSize, isSmallScreen } from '../utils/screen'
+import { BoxTitle } from './box-title'
 
 function getLogoStr(): string {
   return `                       
@@ -47,10 +51,61 @@ function getLogo(version: string): string {
   return logoStrs.join('\n')
 }
 
-export function renderBanner(): void {
-  const shell = getLogo('0.0.2')
+interface BannerProps {
+  version?: string
+  title?: string
+  content?: string
+  width?: number
+}
 
-  // Print ASCII art first
-  process.stdout.write(shell)
-  process.stdout.write('\n')
+export function renderBanner(props: BannerProps = {}): void {
+  const {
+    version = '0.0.2',
+    title = 'Welcome to Pilotage',
+    content = 'A powerful SSD workflow tool',
+    width,
+  } = props
+
+  try {
+    // 获取响应式尺寸
+    const screenSize = getScreenSizeCategory()
+    const responsiveSize = getSmartResponsiveSize({
+      maxWidth: width || 120,
+      minWidth: 40,
+      usePercentage: !width, // 如果没有指定宽度，使用百分比模式
+    }, screenSize)
+
+    // 根据屏幕尺寸调整内容
+    let displayTitle = title
+    let displayContent = content
+
+    if (isSmallScreen()) {
+      // 小屏幕时简化内容
+      displayTitle = title.length > 20 ? `${title.substring(0, 17)}...` : title
+      displayContent = content.length > 30 ? `${content.substring(0, 27)}...` : content
+    }
+
+    const shell = getLogo(version)
+
+    // Print ASCII art first
+    process.stdout.write(shell)
+    process.stdout.write('\n')
+
+    // Render the Box component with responsive sizing
+    render(
+      <BoxTitle
+        title={displayTitle}
+        content={displayContent}
+        width={responsiveSize.width}
+      />,
+    )
+
+    // Clean up on exit
+  }
+  catch (error) {
+    console.error('Error rendering banner:', error)
+    // Fallback to simple text output
+    process.stdout.write(`Welcome to Pilotage v${version}\n`)
+    process.stdout.write(`${title}: ${content}\n`)
+  }
 }

@@ -22,6 +22,12 @@ publish: `pnpm release`
 - **Composability**: Support pipe operations and script integration
 - **Error Handling**: Provide meaningful error messages and exit codes
 
+## Development Rules
+- **Examples in tests/**: Put example code in test files under tests/ directory
+- **Documentation in docs/**: Put documentation in docs/ directory at project root
+- **Script additions**: Only add new scripts to package.json when explicitly requested
+- **Code organization**: Keep src/ directory clean with only core functionality
+
 ## Recent Changes
 [LAST 3 FEATURES AND WHAT THEY ADDED]
 
