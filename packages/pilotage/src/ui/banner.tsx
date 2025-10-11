@@ -3,7 +3,7 @@ import gradient from 'gradient-string'
 import { render } from 'ink'
 import React from 'react'
 import { Level } from '@/config/level'
-import { getLayoutConfig, getScreenSizeCategory, getSmartResponsiveSize, isSmallScreen } from '../utils/screen'
+import { sizeManager } from '../utils/size-manager'
 import { BoxTitle } from './box-title'
 
 function getLogoStr(): string {
@@ -56,7 +56,6 @@ interface BannerProps {
   version?: string
   title?: string
   content?: string
-  width?: number
 }
 
 export function renderBanner(props: BannerProps = {}): void {
@@ -64,23 +63,17 @@ export function renderBanner(props: BannerProps = {}): void {
     version = '0.0.2',
     title = 'Welcome to Pilotage',
     content = 'A powerful SSD workflow tool',
-    width,
   } = props
 
   try {
-    // 获取响应式尺寸
-    const screenSize = getScreenSizeCategory()
-    const responsiveSize = getSmartResponsiveSize({
-      maxWidth: width || 120,
-      minWidth: 40,
-      usePercentage: !width, // 如果没有指定宽度，使用百分比模式
-    }, screenSize)
+    // 从全局尺寸管理器获取响应式尺寸
+    const responsiveSize = sizeManager.getResponsiveSize()
 
     // 根据屏幕尺寸调整内容
     let displayTitle = title
     let displayContent = content
 
-    if (isSmallScreen()) {
+    if (sizeManager.isSmall()) {
       // 小屏幕时简化内容
       displayTitle = title.length > 20 ? `${title.substring(0, 17)}...` : title
       displayContent = content.length > 30 ? `${content.substring(0, 27)}...` : content

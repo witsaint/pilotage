@@ -21,6 +21,8 @@ export interface ResponsiveConfig {
   fallbackWidth?: number
   fallbackHeight?: number
   usePercentage?: boolean
+  width?: number // 直接指定宽度，如果是百分比模式则代表百分比值
+  height?: number // 直接指定高度，如果是百分比模式则代表百分比值
 }
 
 /**
@@ -111,19 +113,34 @@ export function getResponsiveSize(config: ResponsiveConfig = {}): TerminalSize {
     fallbackWidth = 80,
     fallbackHeight = 24,
     usePercentage = false,
+    width: configWidth,
+    height: configHeight,
   } = config
 
   const terminalSize = getTerminalSize()
   let { width, height } = terminalSize
 
-  // 如果使用百分比模式
-  if (usePercentage) {
-    // 计算相对于最大值的百分比
-    const widthPercentage = Math.min(100, (width / maxWidth) * 100)
-    const heightPercentage = Math.min(100, (height / maxHeight) * 100)
+  // 如果指定了具体的宽度或高度
+  if (configWidth !== undefined) {
+    if (usePercentage) {
+      // 百分比模式：configWidth 是百分比值 (0-100)
+      width = Math.round((terminalSize.width * configWidth) / 100)
+    }
+    else {
+      // 绝对模式：configWidth 是绝对像素值
+      width = configWidth
+    }
+  }
 
-    width = Math.round((widthPercentage / 100) * maxWidth)
-    height = Math.round((heightPercentage / 100) * maxHeight)
+  if (configHeight !== undefined) {
+    if (usePercentage) {
+      // 百分比模式：configHeight 是百分比值 (0-100)
+      height = Math.round((terminalSize.height * configHeight) / 100)
+    }
+    else {
+      // 绝对模式：configHeight 是绝对像素值
+      height = configHeight
+    }
   }
 
   // 应用最大最小值限制
@@ -347,3 +364,6 @@ export function getTerminalCapabilities(): TerminalCapabilities {
     isTTY,
   }
 }
+
+// 导出全局尺寸管理器，方便其他模块使用
+export { sizeManager } from './size-manager'
