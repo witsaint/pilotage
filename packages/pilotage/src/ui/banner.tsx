@@ -2,6 +2,7 @@ import process from 'node:process'
 import gradient from 'gradient-string'
 import { render } from 'ink'
 import React from 'react'
+import { Level } from '@/config/level'
 import { getLayoutConfig, getScreenSizeCategory, getSmartResponsiveSize, isSmallScreen } from '../utils/screen'
 import { BoxTitle } from './box-title'
 
@@ -97,6 +98,7 @@ export function renderBanner(props: BannerProps = {}): void {
         title={displayTitle}
         content={displayContent}
         width={responsiveSize.width}
+        level={Level.PROCESS}
       />,
     )
 
