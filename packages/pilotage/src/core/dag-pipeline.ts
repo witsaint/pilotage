@@ -9,10 +9,9 @@ import type {
   PipelineState,
   TaskId,
   TaskResult,
-  TaskStatus,
-  PipelineEventType,
   IEventEmitter,
 } from './types'
+import { PipelineEventType, TaskStatus } from './types'
 
 import {
   type IGraphNode,

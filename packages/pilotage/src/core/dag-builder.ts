@@ -1,6 +1,6 @@
 /**
  * DAG 构建器
- * 提供现代化的 API 来构建 DAG 流程，支持复杂的图结构
+ * 提供现代化的 API 来构建 DAG 流程，支持完整的类型推导和类型安全
  */
 
 import type {
@@ -10,73 +10,44 @@ import type {
   TaskExecutor,
 } from './types'
 
+import { ContextManager } from './context'
 import {
-  type IGraphNode,
-  NodeGraph,
-  TaskNode,
-  GroupNode,
+  DAGPipeline,
+  EventEmitter,
+  type IDAGPipeline,
+} from './dag-pipeline'
+import {
   ConditionNode,
   MergeNode,
+  NodeGraph,
+  TaskNode,
 } from './graph-node'
 
-import {
-  type IDAGPipeline,
-  DAGPipeline,
-} from './dag-pipeline'
+// ==================== 类型推导辅助类型 ====================
 
-import { ContextManager } from './context'
-import { EventEmitter } from './dag-pipeline'
-
-// ==================== DAG 构建器接口 ====================
-
-export interface IDAGBuilder {
-  // ==================== 基础配置 ====================
-  
-  /** 设置流程ID */
-  id: (id: string) => IDAGBuilder
-  /** 设置流程名称 */
-  name: (name: string) => IDAGBuilder
-  /** 设置流程描述 */
-  description: (description: string) => IDAGBuilder
-
-  // ==================== 节点添加 ====================
-  
-  /** 添加任务节点 */
-  task: (id: string, executor: TaskExecutor, name?: string) => IDAGBuilder
-  /** 添加任务节点（完整配置） */
-  addTask: (config: TaskConfig) => IDAGBuilder
-  /** 添加组节点 */
-  group: (id: string, name?: string) => GroupBuilder
-  /** 添加条件节点 */
-  condition: (id: string, condition: (data: unknown) => boolean | Promise<boolean>, name?: string) => ConditionalBuilder
-  /** 添加合并节点 */
-  merge: (id: string, mergeFunction?: (inputs: Record<string, unknown>) => unknown, name?: string) => IDAGBuilder
-
-  // ==================== 连接控制 ====================
-  
-  /** 连接两个节点 */
-  connect: (fromId: string, toId: string, fromPort?: string, toPort?: string) => IDAGBuilder
-  /** 批量连接 */
-  connectMany: (fromIds: string[], toId: string) => IDAGBuilder
-  /** 扇出连接 */
-  fanOut: (fromId: string, toIds: string[]) => IDAGBuilder
-
-  // ==================== 流畅 API ====================
-  
-  /** 链式连接（then 语义） */
-  then: (id: string, executor: TaskExecutor, name?: string) => IDAGBuilder
-  /** 并行分支 */
-  parallel: (branches: Array<{ id: string, executor: TaskExecutor, name?: string }>) => ParallelBuilder
-
-  // ==================== 构建 ====================
-  
-  /** 构建统一流程 */
-  build: () => IDAGPipeline
+/**
+ * 并行分支配置
+ */
+export interface BranchConfig<TInput = unknown, TOutput = unknown> {
+  id: string
+  executor: TaskExecutor<TInput, TOutput>
+  name?: string
 }
 
-// ==================== 统一构建器实现 ====================
+/**
+ * 合并函数类型
+ */
+export type MergeFunction<TInputs extends Record<string, unknown>, TOutput = unknown> = (
+  inputs: TInputs,
+) => TOutput | Promise<TOutput>
 
-export class DAGBuilder implements IDAGBuilder {
+// ==================== 类型安全的 DAG 构建器 ====================
+
+/**
+ * 类型安全的 DAG 构建器
+ * TLastOutput 表示上一个节点的输出类型
+ */
+export class DAGBuilder<TLastOutput = void> {
   private config: Partial<PipelineConfig> = {}
   private nodeGraph: NodeGraph = new NodeGraph()
   private context: IContextManager = new ContextManager()
@@ -85,25 +56,41 @@ export class DAGBuilder implements IDAGBuilder {
 
   // ==================== 基础配置 ====================
 
-  id(id: string): IDAGBuilder {
+  /**
+   * 设置流程 ID
+   */
+  id(id: string): DAGBuilder<TLastOutput> {
     this.config.id = id
     return this
   }
 
-  name(name: string): IDAGBuilder {
+  /**
+   * 设置流程名称
+   */
+  name(name: string): DAGBuilder<TLastOutput> {
     this.config.name = name
     return this
   }
 
-  description(description: string): IDAGBuilder {
+  /**
+   * 设置流程描述
+   */
+  description(description: string): DAGBuilder<TLastOutput> {
     this.config.description = description
     return this
   }
 
-  // ==================== 节点添加 ====================
+  // ==================== 节点添加（类型安全） ====================
 
-  task(id: string, executor: TaskExecutor, name?: string): IDAGBuilder {
-    const taskConfig: TaskConfig = {
+  /**
+   * 添加任务节点（第一个任务，不依赖输入）
+   */
+  task<TOutput>(
+    id: string,
+    executor: TaskExecutor<void, TOutput>,
+    name?: string,
+  ): DAGBuilder<TOutput> {
+    const taskConfig: TaskConfig<void, TOutput> = {
       id,
       name: name || id,
       executor,
@@ -112,52 +99,170 @@ export class DAGBuilder implements IDAGBuilder {
       metadata: {},
     }
 
-    const taskNode = new TaskNode(taskConfig)
+    const taskNode = new TaskNode(taskConfig as TaskConfig)
     this.nodeGraph.addNode(taskNode)
     this.lastNodeId = id
 
-    return this
+    return this as unknown as DAGBuilder<TOutput>
   }
 
-  addTask(config: TaskConfig): IDAGBuilder {
+  /**
+   * 链式连接下一个任务（类型安全的 then）
+   * 自动推导输入类型为上一个任务的输出类型
+   */
+  then<TOutput>(
+    id: string,
+    executor: TaskExecutor<TLastOutput, TOutput>,
+    name?: string,
+  ): DAGBuilder<TOutput> {
+    const taskConfig: TaskConfig<TLastOutput, TOutput> = {
+      id,
+      name: name || id,
+      executor,
+      dependencies: [],
+      tags: [],
+      metadata: {},
+    }
+
+    const taskNode = new TaskNode(taskConfig as TaskConfig)
+    this.nodeGraph.addNode(taskNode)
+
+    // 如果有上一个节点，自动连接
+    if (this.lastNodeId && this.lastNodeId !== id) {
+      this.nodeGraph.addEdge({
+        id: `${this.lastNodeId}_to_${id}`,
+        type: 'dependency' as any,
+        sourceNodeId: this.lastNodeId,
+        sourcePort: 'output',
+        targetNodeId: id,
+        targetPort: 'input',
+      })
+    }
+
+    this.lastNodeId = id
+
+    return this as unknown as DAGBuilder<TOutput>
+  }
+
+  /**
+   * 并行分支（类型安全）
+   * 所有分支接收相同的输入类型
+   */
+  parallel<TBranch1Output = unknown, TBranch2Output = unknown>(
+    branches: [
+      BranchConfig<TLastOutput, TBranch1Output>,
+      BranchConfig<TLastOutput, TBranch2Output>,
+    ],
+  ): ParallelBuilder<TLastOutput, [TBranch1Output, TBranch2Output]>
+
+  parallel<TBranch1Output = unknown, TBranch2Output = unknown, TBranch3Output = unknown>(
+    branches: [
+      BranchConfig<TLastOutput, TBranch1Output>,
+      BranchConfig<TLastOutput, TBranch2Output>,
+      BranchConfig<TLastOutput, TBranch3Output>,
+    ],
+  ): ParallelBuilder<TLastOutput, [TBranch1Output, TBranch2Output, TBranch3Output]>
+
+  parallel<TBranchOutputs extends unknown[]>(
+    branches: Array<BranchConfig<TLastOutput, any>>,
+  ): ParallelBuilder<TLastOutput, TBranchOutputs> {
+    const branchIds: string[] = []
+
+    // 创建所有分支节点
+    for (const branch of branches) {
+      const taskConfig: TaskConfig<TLastOutput, any> = {
+        id: branch.id,
+        name: branch.name || branch.id,
+        executor: branch.executor,
+        dependencies: [],
+        tags: ['parallel'],
+        metadata: {},
+      }
+
+      const taskNode = new TaskNode(taskConfig as TaskConfig)
+      this.nodeGraph.addNode(taskNode)
+      branchIds.push(branch.id)
+
+      // 连接上一个节点到当前分支
+      if (this.lastNodeId) {
+        this.nodeGraph.addEdge({
+          id: `${this.lastNodeId}_to_${branch.id}`,
+          type: 'dependency' as any,
+          sourceNodeId: this.lastNodeId,
+          sourcePort: 'output',
+          targetNodeId: branch.id,
+          targetPort: 'input',
+        })
+      }
+    }
+
+    return new ParallelBuilder<TLastOutput, TBranchOutputs>(
+      this as unknown as DAGBuilder<any>,
+      branchIds,
+      this.nodeGraph,
+    )
+  }
+
+  /**
+   * 条件分支（类型安全）
+   */
+  condition<TTrueOutput = TLastOutput, TFalseOutput = TLastOutput>(
+    id: string,
+    condition: (data: TLastOutput) => boolean | Promise<boolean>,
+    name?: string,
+  ): ConditionalBuilder<TLastOutput, TTrueOutput, TFalseOutput> {
+    const conditionNode = new ConditionNode(id, name || id, condition as any)
+    this.nodeGraph.addNode(conditionNode)
+
+    // 连接上一个节点
+    if (this.lastNodeId) {
+      this.nodeGraph.addEdge({
+        id: `${this.lastNodeId}_to_${id}`,
+        type: 'dependency' as any,
+        sourceNodeId: this.lastNodeId,
+        sourcePort: 'output',
+        targetNodeId: id,
+        targetPort: 'input',
+      })
+    }
+
+    return new ConditionalBuilder<TLastOutput, TTrueOutput, TFalseOutput>(
+      this as unknown as DAGBuilder<any>,
+      conditionNode,
+      this.nodeGraph,
+    )
+  }
+
+  // ==================== 向后兼容方法 ====================
+
+  /**
+   * 添加任务配置（向后兼容）
+   */
+  addTask(config: TaskConfig): DAGBuilder<void> {
     const taskNode = new TaskNode(config)
     this.nodeGraph.addNode(taskNode)
     this.lastNodeId = config.id
-
-    return this
+    return this as unknown as DAGBuilder<void>
   }
 
-  group(id: string, name?: string): GroupBuilder {
-    const groupNode = new GroupNode(id, name || id)
-    this.nodeGraph.addNode(groupNode)
-    return new GroupBuilder(this, groupNode)
-  }
-
-  condition(
-    id: string,
-    condition: (data: unknown) => boolean | Promise<boolean>,
-    name?: string,
-  ): ConditionalBuilder {
-    const conditionNode = new ConditionNode(id, name || id, condition)
-    this.nodeGraph.addNode(conditionNode)
-    return new ConditionalBuilder(this, conditionNode)
-  }
-
+  /**
+   * 添加合并节点（向后兼容）
+   */
   merge(
     id: string,
     mergeFunction?: (inputs: Record<string, unknown>) => unknown,
     name?: string,
-  ): IDAGBuilder {
+  ): DAGBuilder<void> {
     const mergeNode = new MergeNode(id, name || id, mergeFunction)
     this.nodeGraph.addNode(mergeNode)
     this.lastNodeId = id
-
-    return this
+    return this as unknown as DAGBuilder<void>
   }
 
-  // ==================== 连接控制 ====================
-
-  connect(fromId: string, toId: string, fromPort = 'output', toPort = 'input'): IDAGBuilder {
+  /**
+   * 连接两个节点（向后兼容）
+   */
+  connect(fromId: string, toId: string, fromPort = 'output', toPort = 'input'): DAGBuilder<TLastOutput> {
     this.nodeGraph.addEdge({
       id: `${fromId}_to_${toId}`,
       type: 'dependency' as any,
@@ -166,239 +271,245 @@ export class DAGBuilder implements IDAGBuilder {
       targetNodeId: toId,
       targetPort: toPort,
     })
-
     return this
   }
 
-  connectMany(fromIds: string[], toId: string): IDAGBuilder {
+  /**
+   * 批量连接（向后兼容）
+   */
+  connectMany(fromIds: string[], toId: string): DAGBuilder<TLastOutput> {
     for (const fromId of fromIds) {
       this.connect(fromId, toId)
     }
     return this
   }
 
-  fanOut(fromId: string, toIds: string[]): IDAGBuilder {
+  /**
+   * 扇出连接（向后兼容）
+   */
+  fanOut(fromId: string, toIds: string[]): DAGBuilder<TLastOutput> {
     for (const toId of toIds) {
       this.connect(fromId, toId)
     }
     return this
   }
 
-  // ==================== 流畅 API ====================
-
-  then(id: string, executor: TaskExecutor, name?: string): IDAGBuilder {
-    this.task(id, executor, name)
-
-    // 如果有上一个节点，自动连接
-    if (this.lastNodeId && this.lastNodeId !== id) {
-      this.connect(this.lastNodeId, id)
-    }
-
-    return this
-  }
-
-  parallel(branches: Array<{ id: string, executor: TaskExecutor, name?: string }>): ParallelBuilder {
-    const branchIds: string[] = []
-
-    // 添加所有分支节点
-    for (const branch of branches) {
-      this.task(branch.id, branch.executor, branch.name)
-      branchIds.push(branch.id)
-
-      // 连接到当前节点
-      if (this.lastNodeId && this.lastNodeId !== branch.id) {
-        this.connect(this.lastNodeId, branch.id)
-      }
-    }
-
-    return new ParallelBuilder(this, branchIds)
-  }
-
   // ==================== 构建 ====================
 
+  /**
+   * 构建 DAG 流程
+   */
   build(): IDAGPipeline {
-    // 验证配置
-    if (!this.config.id) {
-      throw new Error('Pipeline ID is required')
-    }
-
-    // 构建完整配置
-    const fullConfig: PipelineConfig = {
-      id: this.config.id,
-      name: this.config.name || this.config.id,
+    const config: PipelineConfig = {
+      id: this.config.id || `dag_${Date.now()}`,
+      name: this.config.name || 'DAG Pipeline',
       description: this.config.description,
-      maxConcurrency: this.config.maxConcurrency || 10,
+      maxConcurrency: this.config.maxConcurrency,
       timeout: this.config.timeout,
-      autoRetry: this.config.autoRetry || false,
-      persistState: this.config.persistState || false,
     }
 
-    // 验证图
-    const validation = this.nodeGraph.validate()
-    if (!validation.isValid) {
-      throw new Error(`Graph validation failed: ${validation.errors.join(', ')}`)
-    }
-
-    return new DAGPipeline(fullConfig, this.nodeGraph, this.context, this.events)
-  }
-
-  // ==================== 内部方法 ====================
-
-  /** 获取节点图（供子构建器使用） */
-  getNodeGraph(): NodeGraph {
-    return this.nodeGraph
-  }
-
-  /** 设置最后一个节点ID（供子构建器使用） */
-  setLastNodeId(nodeId: string): void {
-    this.lastNodeId = nodeId
+    return new DAGPipeline(config, this.nodeGraph, this.context)
   }
 }
 
-// ==================== 子构建器 ====================
+// ==================== 并行构建器 ====================
 
-export class GroupBuilder {
+/**
+ * 类型安全的并行构建器
+ */
+export class ParallelBuilder<_TInput, TOutputs extends unknown[]> {
   constructor(
-    private parentBuilder: DAGBuilder,
-    private groupNode: GroupNode,
+    private builder: DAGBuilder<any>,
+    private branchIds: string[],
+    private nodeGraph: NodeGraph,
   ) {}
 
-  addTask(id: string, executor: TaskExecutor, name?: string): GroupBuilder {
-    const taskConfig: TaskConfig = {
+  /**
+   * 合并并行分支的结果
+   * 自动推导合并函数的输入类型
+   */
+  merge<TMergeOutput>(
+    id: string,
+    mergeFunction: (inputs: { [K in keyof TOutputs]: TOutputs[K] }) => TMergeOutput | Promise<TMergeOutput>,
+    name?: string,
+  ): DAGBuilder<TMergeOutput> {
+    // 包装合并函数以匹配接口
+    const wrappedMerge = (inputs: Record<string, unknown>): TMergeOutput | Promise<TMergeOutput> => {
+      // 将 Record 转换为数组形式
+      const inputArray = this.branchIds.map((_id, index) => {
+        const key = `input${index + 1}`
+        return inputs[key]
+      }) as { [K in keyof TOutputs]: TOutputs[K] }
+
+      return mergeFunction(inputArray)
+    }
+
+    const mergeNode = new MergeNode(id, name || id, wrappedMerge)
+    this.nodeGraph.addNode(mergeNode)
+
+    // 连接所有分支到合并节点
+    for (let i = 0; i < this.branchIds.length; i++) {
+      this.nodeGraph.addEdge({
+        id: `${this.branchIds[i]}_to_${id}`,
+        type: 'dependency' as any,
+        sourceNodeId: this.branchIds[i],
+        sourcePort: 'output',
+        targetNodeId: id,
+        targetPort: `input${i + 1}`,
+      })
+    }
+
+    const newBuilder = this.builder as unknown as DAGBuilder<TMergeOutput>
+    // @ts-expect-error - 访问私有属性
+    newBuilder.lastNodeId = id
+
+    return newBuilder
+  }
+}
+
+// ==================== 条件构建器 ====================
+
+/**
+ * 类型安全的条件构建器
+ */
+export class ConditionalBuilder<TInput, TTrueOutput, TFalseOutput> {
+  constructor(
+    private builder: DAGBuilder<any>,
+    private conditionNode: ConditionNode,
+    private nodeGraph: NodeGraph,
+  ) {}
+
+  /**
+   * 条件为真时执行的分支
+   */
+  onTrue<TOutput = TTrueOutput>(
+    id: string,
+    executor: TaskExecutor<TInput, TOutput>,
+    name?: string,
+  ): ConditionalBuilder<TInput, TOutput, TFalseOutput> {
+    const taskConfig: TaskConfig<TInput, TOutput> = {
       id,
       name: name || id,
       executor,
       dependencies: [],
-      tags: [],
+      tags: ['conditional', 'true-branch'],
       metadata: {},
     }
 
-    const taskNode = new TaskNode(taskConfig)
-    this.groupNode.addChild(taskNode)
+    const taskNode = new TaskNode(taskConfig as TaskConfig)
+    this.nodeGraph.addNode(taskNode)
 
-    return this
-  }
-
-  connect(fromId: string, toId: string): GroupBuilder {
-    // 在组内连接节点
-    this.groupNode.addInternalEdge({
-      id: `${fromId}_to_${toId}`,
-      type: 'dependency' as any,
-      sourceNodeId: fromId,
-      sourcePort: 'output',
-      targetNodeId: toId,
+    // 连接条件节点到真分支
+    this.nodeGraph.addEdge({
+      id: `${this.conditionNode.id}_true_to_${id}`,
+      type: 'conditional' as any,
+      sourceNodeId: this.conditionNode.id,
+      sourcePort: 'true',
+      targetNodeId: id,
       targetPort: 'input',
     })
 
-    return this
+    return new ConditionalBuilder<TInput, TOutput, TFalseOutput>(
+      this.builder,
+      this.conditionNode,
+      this.nodeGraph,
+    )
   }
 
-  endGroup(): DAGBuilder {
-    this.parentBuilder.setLastNodeId(this.groupNode.id)
-    return this.parentBuilder
-  }
-}
-
-export class ConditionalBuilder {
-  constructor(
-    private parentBuilder: DAGBuilder,
-    private conditionNode: ConditionNode,
-  ) {}
-
-  then(id: string, executor: TaskExecutor, name?: string): ConditionalBuilder {
-    this.parentBuilder.task(id, executor, name)
-    this.parentBuilder.connect(this.conditionNode.id, id, 'true', 'input')
-    return this
-  }
-
-  else(id: string, executor: TaskExecutor, name?: string): ConditionalBuilder {
-    this.parentBuilder.task(id, executor, name)
-    this.parentBuilder.connect(this.conditionNode.id, id, 'false', 'input')
-    return this
-  }
-
-  endIf(): DAGBuilder {
-    this.parentBuilder.setLastNodeId(this.conditionNode.id)
-    return this.parentBuilder
-  }
-}
-
-export class ParallelBuilder {
-  constructor(
-    private parentBuilder: DAGBuilder,
-    private branchIds: string[],
-  ) {}
-
-  merge(
-    mergeId: string,
-    mergeFunction?: (inputs: Record<string, unknown>) => unknown,
+  /**
+   * 条件为假时执行的分支
+   */
+  onFalse<TOutput = TFalseOutput>(
+    id: string,
+    executor: TaskExecutor<TInput, TOutput>,
     name?: string,
-  ): DAGBuilder {
-    this.parentBuilder.merge(mergeId, mergeFunction, name)
-    this.parentBuilder.connectMany(this.branchIds, mergeId)
-    return this.parentBuilder
+  ): ConditionalBuilder<TInput, TTrueOutput, TOutput> {
+    const taskConfig: TaskConfig<TInput, TOutput> = {
+      id,
+      name: name || id,
+      executor,
+      dependencies: [],
+      tags: ['conditional', 'false-branch'],
+      metadata: {},
+    }
+
+    const taskNode = new TaskNode(taskConfig as TaskConfig)
+    this.nodeGraph.addNode(taskNode)
+
+    // 连接条件节点到假分支
+    this.nodeGraph.addEdge({
+      id: `${this.conditionNode.id}_false_to_${id}`,
+      type: 'conditional' as any,
+      sourceNodeId: this.conditionNode.id,
+      sourcePort: 'false',
+      targetNodeId: id,
+      targetPort: 'input',
+    })
+
+    return new ConditionalBuilder<TInput, TTrueOutput, TOutput>(
+      this.builder,
+      this.conditionNode,
+      this.nodeGraph,
+    )
   }
 
-  endParallel(): DAGBuilder {
-    // 清除最后节点ID，因为有多个分支结束
-    this.parentBuilder.setLastNodeId('')
-    return this.parentBuilder
+  /**
+   * 结束条件分支，返回主构建器
+   */
+  endCondition(): DAGBuilder<TTrueOutput | TFalseOutput> {
+    return this.builder as unknown as DAGBuilder<TTrueOutput | TFalseOutput>
+  }
+
+  // ==================== 向后兼容方法 ====================
+
+  /**
+   * 条件为真的分支（向后兼容别名）
+   */
+  then<TOutput = TTrueOutput>(
+    id: string,
+    executor: TaskExecutor<TInput, TOutput>,
+    name?: string,
+  ): ConditionalBuilder<TInput, TOutput, TFalseOutput> {
+    return this.onTrue(id, executor, name)
+  }
+
+  /**
+   * 条件为假的分支（向后兼容别名）
+   */
+  else<TOutput = TFalseOutput>(
+    id: string,
+    executor: TaskExecutor<TInput, TOutput>,
+    name?: string,
+  ): ConditionalBuilder<TInput, TTrueOutput, TOutput> {
+    return this.onFalse(id, executor, name)
+  }
+
+  /**
+   * 结束条件（向后兼容别名）
+   */
+  endIf(): DAGBuilder<TTrueOutput | TFalseOutput> {
+    return this.endCondition()
   }
 }
 
-// ==================== 便捷函数 ====================
+// ==================== 工厂函数 ====================
 
 /**
- * 创建 DAG 构建器
+ * 创建类型安全的 DAG 构建器
  */
-export function createDAGBuilder(): DAGBuilder {
-  return new DAGBuilder()
+export function dag(): DAGBuilder<void> {
+  return new DAGBuilder<void>()
 }
 
 /**
- * 快速创建 DAG 流程的 DSL
+ * 创建 DAG 构建器（别名）
  */
-export function dag(): DAGBuilder {
-  return new DAGBuilder()
+export function createDAGBuilder(): DAGBuilder<void> {
+  return new DAGBuilder<void>()
 }
 
-// ==================== 使用示例 ====================
+// ==================== 向后兼容的导出 ====================
 
-/**
- * 示例：使用 DAG 构建器创建复杂流程
- */
-export function exampleDAGFlow(): IDAGPipeline {
-  return dag()
-    .id('unified-example')
-    .name('统一流程示例')
-    .task('start', async () => 'Hello')
-    .then('processA', async input => `${input} from A`)
-    .then('processB', async input => `${input} from B`)
-    .condition('check', async input => (input as string).includes('A'))
-    .then('trueTask', async input => `True: ${input}`)
-    .else('falseTask', async input => `False: ${input}`)
-    .endIf()
-    .merge('final', inputs => Object.values(inputs).join(' | '))
-    .build()
-}
-
-/**
- * 示例：复杂的分支合并场景
- */
-export function exampleComplexDAGFlow(): IDAGPipeline {
-  return dag()
-    .id('complex-flow')
-    .name('复杂分支流程')
-    .task('init', async () => 'initialized')
-    .parallel([
-      { id: 'branchA', executor: async () => 'A result' },
-      { id: 'branchB', executor: async () => 'B result' },
-      { id: 'branchC', executor: async () => 'C result' },
-    ])
-    .merge('combine', inputs => ({
-      results: Object.values(inputs),
-      count: Object.keys(inputs).length,
-    }))
-    .then('finalize', async input => `Final: ${JSON.stringify(input)}`)
-    .build()
-}
+// 保持向后兼容的类别名
+export { ParallelBuilder as DAGParallelBuilder }
+export { ConditionalBuilder as DAGConditionalBuilder }

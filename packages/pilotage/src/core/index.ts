@@ -12,16 +12,17 @@ export {
 
 // ==================== 核心实现 ====================
 
-// DAG 构建器
+// 类型安全的 DAG 构建器
 export {
+  type BranchConfig,
+  ConditionalBuilder,
   createDAGBuilder,
   dag,
   DAGBuilder,
-  ConditionalBuilder as DAGConditionalBuilder,
-  GroupBuilder as DAGGroupBuilder,
-  ParallelBuilder as DAGParallelBuilder,
-  exampleComplexDAGFlow,
-  exampleDAGFlow,
+  DAGConditionalBuilder,
+  DAGParallelBuilder,
+  type MergeFunction,
+  ParallelBuilder,
 } from './dag-builder'
 
 export {
@@ -30,9 +31,14 @@ export {
   complexBranchMergeExample,
   conditionalFlowExample,
   dagAdvantagesExample,
+  directNodeGraphExample,
   errorHandlingExample,
+  nodeGraphAdvancedExample,
+  nodeGraphConditionalExample,
+  nodeGraphExecutionExample,
   parallelProcessingExample,
   runDAGExamples,
+  runNodeGraphExamples,
 } from './dag-examples'
 
 // DAG 流程系统
