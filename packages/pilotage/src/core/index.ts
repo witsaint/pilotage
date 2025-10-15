@@ -41,6 +41,28 @@ export {
   runNodeGraphExamples,
 } from './dag-examples'
 
+// DAG Graph - 类型安全的有向无环图系统
+export {
+  createDAGGraph,
+  createDAGNode,
+  type DAGEdgeConfig,
+  DAGGraph,
+  dagGraph,
+  DAGNode,
+  dagNode,
+  type DAGNodeConfig,
+} from './dag-graph'
+
+export {
+  dagGraphBasicExample,
+  dagGraphOperationsExample,
+  dagGraphOptionalInputExample,
+  dagGraphParallelExample,
+  dagGraphTransformExample,
+  dagGraphValidationExample,
+  runDAGGraphExamples,
+} from './dag-graph-examples'
+
 // DAG 流程系统
 export {
   createDAGPipeline,
