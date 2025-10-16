@@ -11,70 +11,67 @@ interface BoxInputProps {
 }
 
 export function BoxInput({
-  onSubmit,
   placeholder = 'Enter your input',
-  suggestions = [],
-  maxSuggestions = 5,
 }: BoxInputProps): React.JSX.Element {
   const [query, setQuery] = useState('')
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const [showSuggestions, setShowSuggestions] = useState(false)
+  // const [selectedIndex, setSelectedIndex] = useState(0)
+  // const [showSuggestions, setShowSuggestions] = useState(false)
 
-  // 过滤建议列表
-  const filteredSuggestions = useMemo(() => {
-    if (!query.trim() || suggestions.length === 0) {
-      return []
-    }
+  // // 过滤建议列表
+  // const filteredSuggestions = useMemo(() => {
+  //   if (!query.trim() || suggestions.length === 0) {
+  //     return []
+  //   }
 
-    return suggestions
-      .filter(suggestion =>
-        suggestion.toLowerCase().includes(query.toLowerCase()),
-      )
-      .slice(0, maxSuggestions)
-  }, [query, suggestions, maxSuggestions])
+  //   return suggestions
+  //     .filter(suggestion =>
+  //       suggestion.toLowerCase().includes(query.toLowerCase()),
+  //     )
+  //     .slice(0, maxSuggestions)
+  // }, [query, suggestions, maxSuggestions])
 
-  // 处理键盘输入
-  useInput((input, key) => {
-    if (key.upArrow && filteredSuggestions.length > 0) {
-      setSelectedIndex(prev =>
-        prev > 0 ? prev - 1 : filteredSuggestions.length - 1,
-      )
-    }
+  // // 处理键盘输入
+  // useInput((input, key) => {
+  //   if (key.upArrow && filteredSuggestions.length > 0) {
+  //     setSelectedIndex(prev =>
+  //       prev > 0 ? prev - 1 : filteredSuggestions.length - 1,
+  //     )
+  //   }
 
-    if (key.downArrow && filteredSuggestions.length > 0) {
-      setSelectedIndex(prev =>
-        prev < filteredSuggestions.length - 1 ? prev + 1 : 0,
-      )
-    }
+  //   if (key.downArrow && filteredSuggestions.length > 0) {
+  //     setSelectedIndex(prev =>
+  //       prev < filteredSuggestions.length - 1 ? prev + 1 : 0,
+  //     )
+  //   }
 
-    if (key.tab && filteredSuggestions.length > 0) {
-      // Tab补全
-      const selectedSuggestion = filteredSuggestions[selectedIndex]
-      if (selectedSuggestion) {
-        setQuery(selectedSuggestion)
-        setShowSuggestions(false)
-      }
-    }
+  //   if (key.tab && filteredSuggestions.length > 0) {
+  //     // Tab补全
+  //     const selectedSuggestion = filteredSuggestions[selectedIndex]
+  //     if (selectedSuggestion) {
+  //       setQuery(selectedSuggestion)
+  //       setShowSuggestions(false)
+  //     }
+  //   }
 
-    if (key.escape) {
-      setShowSuggestions(false)
-      setSelectedIndex(0)
-    }
-  })
+  //   if (key.escape) {
+  //     setShowSuggestions(false)
+  //     setSelectedIndex(0)
+  //   }
+  // })
 
-  const handleSubmit = (value: string): void => {
-    if (onSubmit) {
-      onSubmit(value)
-    }
-    setQuery('') // 清空输入框
-    setSelectedIndex(0)
-    setShowSuggestions(false)
-  }
+  // const handleSubmit = (value: string): void => {
+  //   if (onSubmit) {
+  //     onSubmit(value)
+  //   }
+  //   setQuery('') // 清空输入框
+  //   setSelectedIndex(0)
+  //   setShowSuggestions(false)
+  // }
 
   const handleChange = (value: string): void => {
     setQuery(value)
-    setSelectedIndex(0)
-    setShowSuggestions(true)
+    // setSelectedIndex(0)
+    // setShowSuggestions(true)
   }
 
   return (
@@ -96,12 +93,12 @@ export function BoxInput({
         <TextInput
           value={query}
           onChange={handleChange}
-          onSubmit={handleSubmit}
+          // onSubmit={handleSubmit}
           placeholder={placeholder}
         />
       </InkBox>
 
-      {/* 建议列表 */}
+      {/* 建议列表
       {showSuggestions && filteredSuggestions.length > 0 && (
         <InkBox
           flexDirection="column"
@@ -129,7 +126,7 @@ export function BoxInput({
             </Text>
           </InkBox>
         </InkBox>
-      )}
+      )} */}
     </InkBox>
   )
 }

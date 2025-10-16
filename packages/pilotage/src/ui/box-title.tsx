@@ -27,7 +27,7 @@ export function BoxTitle({
         {/* 标题和方框在同一行，标题嵌入到边框上边 */}
         <InkBox position="relative">
           {/* 方框 */}
-          <InkBox borderStyle="round" borderColor={LEVELCOLOR_MAP[level]} padding={1} width="100%">
+          <InkBox borderStyle="round" borderColor={LEVELCOLOR_MAP[level]} paddingX={1} paddingY={0} width="100%">
             <InkBox flexDirection="column">
               <Text>
                 {content || 'Content'}

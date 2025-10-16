@@ -1,4 +1,3 @@
-import process from 'node:process'
 import packageJson from '../package.json'
 import { startAutocompleteDemo } from './ui/autocomplete-example'
 import { renderBanner } from './ui/banner'
@@ -12,9 +11,9 @@ sizeManager.init({
   usePercentage: true, // 使用百分比模式
 })
 
-// 示例：如何传参给 Ink 组件
+// 方案：banner 在主屏幕输出，Ink 在同一屏幕继续渲染
+// 不使用 alternate screen，保持内容连续性
 renderBanner({
   version: packageJson.version,
 })
-process.stdout.write('\x1B[?7l')
 startAutocompleteDemo()

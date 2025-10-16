@@ -1,5 +1,5 @@
 import process from 'node:process'
-import { render, useStderr } from 'ink'
+import { Box, render } from 'ink'
 import React, { useState } from 'react'
 import { Level } from '@/config/level'
 import { BoxInput } from './box-input'
@@ -45,7 +45,7 @@ const COMMANDS = [
   'chown',
 ]
 
-const FILE_NAMES = [
+const _FILE_NAMES = [
   'package.json',
   'tsconfig.json',
   'README.md',
@@ -74,95 +74,55 @@ const FILE_NAMES = [
 
 // 主应用组件
 function AutocompleteApp(): React.JSX.Element {
-  const [mode, setMode] = useState<'command' | 'file' | 'result'>('command')
-  const [result, setResult] = useState('')
-  const { write } = useStderr()
+  const [_result, setResult] = useState('')
 
   const handleCommandSubmit = (command: string): void => {
-    process.stdout.write('\x1B[u')
+    // 移除 process.stdout.write('\x1B[u')，这会导致光标位置错乱
     setResult(`执行命令: ${command}`)
-    write(`\n 执行命令: ${command} \n`)
-    setMode('result')
   }
 
-  const handleFileSubmit = (filename: string): void => {
-    setResult(`选择文件: ${filename}`)
-    setMode('result')
-  }
-
-  const handleRestart = (): void => {
-    setResult('')
-    setMode('command')
-  }
-
-  const renderContent = (): React.JSX.Element => {
-    switch (mode) {
-      case 'command':
-        return (
-          <>
-            <BoxTitle
-              title="命令输入"
-              content="输入命令，支持自动补全"
-              level={Level.INFO}
-            />
-            <BoxInput
-              onSubmit={handleCommandSubmit}
-              placeholder="输入命令 (如: git, npm, docker...)"
-              suggestions={COMMANDS}
-              maxSuggestions={8}
-            />
-          </>
-        )
-      case 'file':
-        return (
-          <>
-            <BoxTitle
-              title="文件选择"
-              content="选择文件，支持自动补全"
-              level={Level.INFO}
-            />
-            <BoxInput
-              onSubmit={handleFileSubmit}
-              placeholder="输入文件名 (如: package.json, index.ts...)"
-              suggestions={FILE_NAMES}
-              maxSuggestions={6}
-            />
-          </>
-        )
-      case 'result':
-        return (
-          <>
-            <BoxTitle
-              title="执行结果"
-              content={result}
-              level={Level.SUCCESS}
-            />
-            <BoxInput
-              onSubmit={handleRestart}
-              placeholder="按回车重新开始"
-            />
-          </>
-        )
-      default:
-        return <></>
-    }
-  }
-
-  return <>{renderContent()}</>
+  return (
+    <Box flexDirection="column" padding={1} gap={1}>
+      <BoxTitle
+        title="命令输入"
+        content="输入命令，支持自动补全"
+        level={Level.INFO}
+      />
+      <BoxTitle
+        title="命令输入"
+        content="输入命令，支持自动补全"
+        level={Level.INFO}
+      />
+      <BoxInput
+        onSubmit={handleCommandSubmit}
+        placeholder="输入命令 (如: git, npm, docker...)"
+        suggestions={COMMANDS}
+        maxSuggestions={8}
+      />
+    </Box>
+  )
 }
 
 // 启动函数
 export function startAutocompleteDemo(): void {
   try {
-    render(<AutocompleteApp />)
+    // 方案:先输出 banner,然后让 Ink 使用 alternate screen
+    // 这样 banner 会保留在主屏幕,Ink 在独立屏幕渲染,退出后回到主屏幕
+    process.stdout.write('\n')
+
+    render(<AutocompleteApp />, {
+      stdout: process.stdout,
+      stdin: process.stdin,
+      exitOnCtrlC: true,
+      patchConsole: false, // 不修补 console,避免干扰之前的输出
+      // 不使用 alternate screen,直接在当前位置渲染
+    })
   }
   catch (error) {
     console.error('Error starting autocomplete demo:', error)
     process.exit(1)
   }
-}
-
-// 简单的使用示例
+}// 简单的使用示例
 export function quickAutocompleteInput(
   placeholder: string = 'Enter input',
   suggestions: string[] = [],
@@ -180,6 +140,12 @@ export function quickAutocompleteInput(
         maxSuggestions={maxSuggestions}
       />
     )
-    render(component)
+    process.stdout.write('\n')
+    render(component, {
+      stdout: process.stdout,
+      stdin: process.stdin,
+      exitOnCtrlC: true,
+      patchConsole: false,
+    })
   })
 }
