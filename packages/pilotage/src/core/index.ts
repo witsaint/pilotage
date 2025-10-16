@@ -45,6 +45,9 @@ export {
 export {
   createDAGGraph,
   createDAGNode,
+  DAGConditionNode,
+  dagConditionNode,
+  type DAGConditionNodeConfig,
   type DAGEdgeConfig,
   DAGGraph,
   dagGraph,
@@ -54,11 +57,17 @@ export {
 } from './dag-graph'
 
 export {
+  dagGraphAutoAddNodesExample,
   dagGraphBasicExample,
+  dagGraphConditionalConnectExample,
+  dagGraphConditionalExample,
+  dagGraphConnectExample,
+  dagGraphMultiBranchExample,
   dagGraphOperationsExample,
   dagGraphOptionalInputExample,
   dagGraphParallelExample,
   dagGraphTransformExample,
+  dagGraphTypeSafetyExample,
   dagGraphValidationExample,
   runDAGGraphExamples,
 } from './dag-graph-examples'
