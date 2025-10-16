@@ -45,54 +45,24 @@ const COMMANDS = [
   'chown',
 ]
 
-const _FILE_NAMES = [
-  'package.json',
-  'tsconfig.json',
-  'README.md',
-  'index.ts',
-  'index.js',
-  'app.tsx',
-  'app.jsx',
-  'main.ts',
-  'main.js',
-  'config.ts',
-  'config.js',
-  'utils.ts',
-  'utils.js',
-  'types.ts',
-  'types.js',
-  'components',
-  'src',
-  'dist',
-  'node_modules',
-  'public',
-  'assets',
-  'styles',
-  'tests',
-  'docs',
-]
-
 // 主应用组件
 function AutocompleteApp(): React.JSX.Element {
-  const [_result, setResult] = useState('')
+  const [result, setResult] = useState('')
 
   const handleCommandSubmit = (command: string): void => {
     // 移除 process.stdout.write('\x1B[u')，这会导致光标位置错乱
     setResult(`执行命令: ${command}`)
+    // 移除 write()，Ink 会自动管理输出
   }
 
   return (
     <Box flexDirection="column" padding={1} gap={1}>
       <BoxTitle
         title="命令输入"
-        content="输入命令，支持自动补全"
+        content={result || '请输入命令并选择...'}
         level={Level.INFO}
       />
-      <BoxTitle
-        title="命令输入"
-        content="输入命令，支持自动补全"
-        level={Level.INFO}
-      />
+
       <BoxInput
         onSubmit={handleCommandSubmit}
         placeholder="输入命令 (如: git, npm, docker...)"
@@ -116,6 +86,7 @@ export function startAutocompleteDemo(): void {
       exitOnCtrlC: true,
       patchConsole: false, // 不修补 console,避免干扰之前的输出
       // 不使用 alternate screen,直接在当前位置渲染
+      isScreenReaderEnabled: false,
     })
   }
   catch (error) {
