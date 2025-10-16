@@ -76,16 +76,11 @@ function AutocompleteApp(): React.JSX.Element {
 // 启动函数
 export function startAutocompleteDemo(): void {
   try {
-    // 方案:先输出 banner,然后让 Ink 使用 alternate screen
-    // 这样 banner 会保留在主屏幕,Ink 在独立屏幕渲染,退出后回到主屏幕
-    process.stdout.write('\n')
-
     render(<AutocompleteApp />, {
       stdout: process.stdout,
       stdin: process.stdin,
       exitOnCtrlC: true,
-      patchConsole: false, // 不修补 console,避免干扰之前的输出
-      // 不使用 alternate screen,直接在当前位置渲染
+      patchConsole: false,
       isScreenReaderEnabled: false,
     })
   }

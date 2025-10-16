@@ -1,4 +1,4 @@
-import { Box as InkBox, useInput, useStdin, useStdout } from 'ink'
+import { Box as InkBox, Text, useInput, useStdout } from 'ink'
 import SelectInput from 'ink-select-input'
 import TextInput from 'ink-text-input'
 import React, { useMemo, useState } from 'react'
@@ -94,7 +94,9 @@ export function BoxInput({
         borderLeft={false}
         borderRight={false}
         width="100%"
+        gap={1}
       >
+        <Text>❯</Text>
         <TextInput
           value={query}
           onChange={handleChange}
