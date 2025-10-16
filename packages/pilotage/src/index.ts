@@ -1,4 +1,6 @@
+import process from 'node:process'
 import packageJson from '../package.json'
+import { startAutocompleteDemo } from './ui/autocomplete-example'
 import { renderBanner } from './ui/banner'
 import { sizeManager } from './utils/size-manager'
 
@@ -13,7 +15,6 @@ sizeManager.init({
 // 示例：如何传参给 Ink 组件
 renderBanner({
   version: packageJson.version,
-  title: 'Pilotage CLI',
-  content: 'Spec-Driven Development workflow tool',
-  // width 参数现在从全局尺寸管理器获取
 })
+process.stdout.write('\x1B[?7l')
+startAutocompleteDemo()

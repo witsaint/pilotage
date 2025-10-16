@@ -4,6 +4,7 @@ import { render } from 'ink'
 import React from 'react'
 import { Level } from '@/config/level'
 import { sizeManager } from '../utils/size-manager'
+import { BoxInput } from './box-input'
 import { BoxTitle } from './box-title'
 
 function getLogoStr(): string {
@@ -54,46 +55,18 @@ function getLogo(version: string): string {
 
 interface BannerProps {
   version?: string
-  title?: string
-  content?: string
 }
 
 export function renderBanner(props: BannerProps = {}): void {
   const {
     version = '0.0.2',
-    title = 'Welcome to Pilotage',
-    content = 'A powerful SSD workflow tool',
   } = props
 
   try {
-    // 从全局尺寸管理器获取响应式尺寸
-    const responsiveSize = sizeManager.getResponsiveSize()
-
-    // 根据屏幕尺寸调整内容
-    let displayTitle = title
-    let displayContent = content
-
-    if (sizeManager.isSmall()) {
-      // 小屏幕时简化内容
-      displayTitle = title.length > 20 ? `${title.substring(0, 17)}...` : title
-      displayContent = content.length > 30 ? `${content.substring(0, 27)}...` : content
-    }
-
     const shell = getLogo(version)
-
     // Print ASCII art first
     process.stdout.write(shell)
     process.stdout.write('\n')
-
-    // Render the Box component with responsive sizing
-    render(
-      <BoxTitle
-        title={displayTitle}
-        content={displayContent}
-        width={responsiveSize.width}
-        level={Level.PROCESS}
-      />,
-    )
 
     // Clean up on exit
   }
@@ -101,6 +74,5 @@ export function renderBanner(props: BannerProps = {}): void {
     console.error('Error rendering banner:', error)
     // Fallback to simple text output
     process.stdout.write(`Welcome to Pilotage v${version}\n`)
-    process.stdout.write(`${title}: ${content}\n`)
   }
 }

@@ -183,6 +183,9 @@ importers:
       ink:
         specifier: 'catalog:'
         version: 6.3.1(react@19.1.1)
+      ink-text-input:
+        specifier: ^6.0.0
+        version: 6.0.0(ink@6.3.1(react@19.1.1))(react@19.1.1)
       react:
         specifier: 'catalog:'
         version: 19.1.1
@@ -2021,6 +2024,13 @@ packages:
   indent-string@5.0.0:
     resolution: {integrity: sha512-m6FAo/spmsW2Ab2fU35JTYwtOKa2yAwXSwgjSv1TJzh4Mh7mC3lzAOVLBprb72XsTrgkEIsl7YrFNAiDiRhIGg==}
     engines: {node: '>=12'}
+
+  ink-text-input@6.0.0:
+    resolution: {integrity: sha512-Fw64n7Yha5deb1rHY137zHTAbSTNelUKuB5Kkk2HACXEtwIHBCf9OH2tP/LQ9fRYTl1F0dZgbW0zPnZk6FA9Lw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      ink: '>=5'
+      react: '>=18'
 
   ink@6.3.1:
     resolution: {integrity: sha512-3wGwITGrzL6rkWsi2gEKzgwdafGn4ZYd3u4oRp+sOPvfoxEHlnoB5Vnk9Uy5dMRUhDOqF3hqr4rLQ4lEzBc2sQ==}
@@ -5553,6 +5563,13 @@ snapshots:
   indent-string@4.0.0: {}
 
   indent-string@5.0.0: {}
+
+  ink-text-input@6.0.0(ink@6.3.1(react@19.1.1))(react@19.1.1):
+    dependencies:
+      chalk: 5.6.2
+      ink: 6.3.1(react@19.1.1)
+      react: 19.1.1
+      type-fest: 4.41.0
 
   ink@6.3.1(react@19.1.1):
     dependencies:
