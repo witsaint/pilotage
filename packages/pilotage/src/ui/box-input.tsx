@@ -1,8 +1,8 @@
-import { Box as InkBox, Text, useInput, useStdout } from 'ink'
+import { Box as InkBox, Text, useInput } from 'ink'
 import SelectInput from 'ink-select-input'
-import TextInput from 'ink-text-input'
 import React, { useMemo, useState } from 'react'
 import { Level, LEVELCOLOR_MAP } from '@/config/level'
+import { RefTextInput, type RefTextInputHandle } from './ref-text-input'
 
 interface BoxInputProps {
   onSubmit?: (value: string) => void
@@ -19,6 +19,8 @@ export function BoxInput({
 }: BoxInputProps): React.JSX.Element {
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
+  // 自定义输入框 ref 控制光标
+  const refInput = React.useRef<RefTextInputHandle | null>(null)
 
   const handleSelect = (): void => {
     // write(query)
@@ -56,10 +58,16 @@ export function BoxInput({
     }
 
     if (key.tab && filteredSuggestions.length > 0) {
-      // Tab补全
+      // Tab补全（Ink 在 Node 终端中，受控 value 更新后光标自动在末尾）
       const selectedSuggestion = filteredSuggestions[selectedIndex]
       if (selectedSuggestion) {
         setQuery(selectedSuggestion.value)
+        // 使用 ref 主动将光标移动到末尾
+        setTimeout(() => {
+          refInput.current?.moveCursorToEnd()
+        }, 0)
+        // 重置选中索引，因为补全后建议列表会更新
+        setSelectedIndex(0)
       }
     }
   })
@@ -95,7 +103,9 @@ export function BoxInput({
         gap={1}
       >
         <Text>❯</Text>
-        <TextInput
+        {/* 使用包裹层 key 触发重挂载，TextInput 不接受自定义 key prop 类型声明 */}
+        <RefTextInput
+          ref={refInput}
           value={query}
           onChange={handleChange}
           onSubmit={handleSubmit}

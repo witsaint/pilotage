@@ -13,7 +13,7 @@ export function RootApp(): React.JSX.Element {
       <BoxInput
         onSubmit={onSubmit}
         placeholder="输入命令 (如: /info)"
-        suggestions={[]}
+        suggestions={['/info', '/help', '/exit']}
         maxSuggestions={8}
       />
     </Box>
