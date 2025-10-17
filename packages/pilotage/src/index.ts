@@ -1,24 +1,29 @@
-import process from 'node:process'
 import packageJson from '../package.json'
-import { hasInitialized } from './config/root-config'
+import { bootstrap } from './core'
 import { patchConsoleLog } from './core/console'
 import { renderBanner } from './ui/banner'
 import { sizeManager } from './utils/size-manager'
 
-// 初始化全局尺寸管理器
+/**
+ * initialize the size manager
+ */
 sizeManager.init({
   maxWidth: 120,
   minWidth: 40,
-  width: 80, // 使用终端宽度的 80%
-  usePercentage: true, // 使用百分比模式
+  width: 80, // use 80% of the terminal width
+  usePercentage: true, // use percentage mode
 })
 
 renderBanner({
   version: packageJson.version,
 })
 
-hasInitialized()
-
+/**
+ * patch console.log method to ui
+ */
 patchConsoleLog()
 
-console.log('isInitialized', process.argv)
+/**
+ * start the app
+ */
+bootstrap()

@@ -19,11 +19,9 @@ export function BoxInput({
 }: BoxInputProps): React.JSX.Element {
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
-  const { write } = useStdout()
 
-  const handleSelect = (_item): void => {
-    // `item` = { label: 'First', value: 'first' }
-    write('2133')
+  const handleSelect = (): void => {
+    // write(query)
   }
 
   // 过滤建议列表
@@ -104,7 +102,6 @@ export function BoxInput({
           placeholder={placeholder}
         />
       </InkBox>
-
       <SelectInput items={filteredSuggestions} onSelect={handleSelect} />
     </InkBox>
   )
