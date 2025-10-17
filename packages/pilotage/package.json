@@ -47,8 +47,8 @@
   "dependencies": {
     "gradient-string": "catalog:",
     "ink": "catalog:",
-    "ink-select-input": "^6.2.0",
-    "ink-text-input": "^6.0.0",
+    "ink-select-input": "catalog:",
+    "ink-text-input": "catalog:",
     "react": "catalog:"
   },
   "devDependencies": {

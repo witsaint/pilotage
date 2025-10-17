@@ -1,5 +1,7 @@
+import process from 'node:process'
 import packageJson from '../package.json'
-import { startAutocompleteDemo } from './ui/autocomplete-example'
+import { hasInitialized } from './config/root-config'
+import { patchConsoleLog } from './core/console'
 import { renderBanner } from './ui/banner'
 import { sizeManager } from './utils/size-manager'
 
@@ -11,9 +13,12 @@ sizeManager.init({
   usePercentage: true, // 使用百分比模式
 })
 
-// 方案：banner 在主屏幕输出，Ink 在同一屏幕继续渲染
-// 不使用 alternate screen，保持内容连续性
 renderBanner({
   version: packageJson.version,
 })
-startAutocompleteDemo()
+
+hasInitialized()
+
+patchConsoleLog()
+
+console.log('isInitialized', process.argv)
