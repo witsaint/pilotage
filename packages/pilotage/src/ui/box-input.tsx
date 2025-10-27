@@ -90,7 +90,7 @@ export function BoxInput({
       {/* 输入框 */}
       <InkBox
         borderStyle="single"
-        padding={1}
+        padding={0}
         borderTopColor={LEVELCOLOR_MAP[Level.DEFAULT]}
         borderDimColor={LEVELCOLOR_MAP[Level.DEFAULT]}
         borderBottomDimColor
