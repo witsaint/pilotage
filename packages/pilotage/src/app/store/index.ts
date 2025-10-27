@@ -1,24 +1,17 @@
-// 定义消息类型
-interface Message {
-  id: string
-  type: 'user' | 'system' | 'error' | 'success' | 'info' | 'loading' | 'progress' | 'table' | 'json'
-  content: string | any
-  timestamp?: Date
-  metadata?: Record<string, any>
-}
+import type { Message, MessageMeta } from '@/types/message'
 
 let messages: Message[] = []
 let listeners: (() => void)[] = []
 
-export function addMessage(content: string | any, type: Message['type'] = 'user', metadata?: Record<string, any>): void {
-  const message: Message = {
-    id: Date.now().toString(),
+export function addMessage<T extends Message>(content: T['content'], type: T['type'], metadata?: MessageMeta): void {
+  const message: T = {
+    id: crypto.randomUUID(),
     type,
-    content,
-    timestamp: new Date(),
+    content: content as T['content'],
+    timestamp: Date.now(),
     metadata,
-  }
-  messages = [...messages, message] // 创建新数组而不是修改原数组
+  } as T
+  messages = [...messages, message]
   emitChange()
 }
 
