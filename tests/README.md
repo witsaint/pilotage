@@ -102,8 +102,7 @@ const cliTester = new CLITester()
 cliTester.setArgs(['--verbose', '--config', 'config.json'])
 
 // 设置环境变量
-cliTester.setEnv({ DEBUG: 'true',
-NODE_ENV: 'test' })
+cliTester.setEnv({ DEBUG: 'true', NODE_ENV: 'test' })
 
 // 设置工作目录
 cliTester.setCwd('/tmp/test-dir')

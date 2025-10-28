@@ -3,7 +3,7 @@ import { MessageType } from '@/types/message'
 import { ListComponent } from '../list'
 import { TextComponent } from '../text'
 
-export function historyRoute(type: MessageType): React.JSX.Element {
+export function historyRoute(type: MessageType): React.ComponentType<any> {
   switch (type) {
     case MessageType.String:
       return TextComponent

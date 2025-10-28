@@ -1,3 +1,4 @@
+import type { Message } from '@/types/message'
 import { Box } from 'ink'
 import React, { useSyncExternalStore } from 'react'
 import { MessageType } from '@/types/message'
@@ -16,7 +17,7 @@ export function RootApp(): React.JSX.Element {
     <Box flexDirection="column">
       {messages.map(message => (
         <Box key={message.id} marginTop={1}>
-          <HistoryComponent message={message} />
+          <HistoryComponent message={message as Message} />
         </Box>
       ))}
       <BoxInput

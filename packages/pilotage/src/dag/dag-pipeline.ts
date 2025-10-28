@@ -298,8 +298,7 @@ export class DAGPipeline implements IDAGPipeline {
 
     try {
       const result = await this.executeNode(nextNode)
-      return { nodeId: nextNode.id,
-result }
+      return { nodeId: nextNode.id, result }
     }
     catch (error) {
       throw new Error(`Failed to execute next node ${nextNode.id}: ${error}`)
@@ -379,14 +378,12 @@ result }
 
     // 设置节点状态为跳过
     this._state.nodeStates.set(nodeId, NodeStatus.SKIPPED)
-    this._state.nodeResults.set(nodeId, { skipped: true,
-reason })
+    this._state.nodeResults.set(nodeId, { skipped: true, reason })
 
     // 触发节点跳过事件
     await this.emitEvent(PipelineEventType.TASK_FAILED, {
       taskId: nodeId,
-      result: { skipped: true,
-reason },
+      result: { skipped: true, reason },
     })
   }
 
