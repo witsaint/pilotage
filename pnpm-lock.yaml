@@ -37,6 +37,9 @@ catalogs:
     ink:
       specifier: ^6.3.1
       version: 6.3.1
+    ink-text-input:
+      specifier: ^6.0.0
+      version: 6.0.0
     react:
       specifier: ^19.1.1
       version: 19.1.1
@@ -177,21 +180,24 @@ importers:
 
   packages/pilotage:
     dependencies:
+      figures:
+        specifier: ^6.1.0
+        version: 6.1.0
       gradient-string:
         specifier: 'catalog:'
         version: 3.0.0
       ink:
         specifier: 'catalog:'
         version: 6.3.1(react@19.1.1)
-      ink-select-input:
-        specifier: ^6.2.0
-        version: 6.2.0(ink@6.3.1(react@19.1.1))(react@19.1.1)
       ink-text-input:
-        specifier: ^6.0.0
+        specifier: 'catalog:'
         version: 6.0.0(ink@6.3.1(react@19.1.1))(react@19.1.1)
       react:
         specifier: 'catalog:'
         version: 19.1.1
+      to-rotated:
+        specifier: ^1.0.0
+        version: 1.0.0
     devDependencies:
       '@antfu/eslint-config':
         specifier: catalog:cli
@@ -2027,13 +2033,6 @@ packages:
   indent-string@5.0.0:
     resolution: {integrity: sha512-m6FAo/spmsW2Ab2fU35JTYwtOKa2yAwXSwgjSv1TJzh4Mh7mC3lzAOVLBprb72XsTrgkEIsl7YrFNAiDiRhIGg==}
     engines: {node: '>=12'}
-
-  ink-select-input@6.2.0:
-    resolution: {integrity: sha512-304fZXxkpYxJ9si5lxRCaX01GNlmPBgOZumXXRnPYbHW/iI31cgQynqk2tRypGLOF1cMIwPUzL2LSm6q4I5rQQ==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      ink: '>=5.0.0'
-      react: '>=18.0.0'
 
   ink-text-input@6.0.0:
     resolution: {integrity: sha512-Fw64n7Yha5deb1rHY137zHTAbSTNelUKuB5Kkk2HACXEtwIHBCf9OH2tP/LQ9fRYTl1F0dZgbW0zPnZk6FA9Lw==}
@@ -5577,13 +5576,6 @@ snapshots:
   indent-string@4.0.0: {}
 
   indent-string@5.0.0: {}
-
-  ink-select-input@6.2.0(ink@6.3.1(react@19.1.1))(react@19.1.1):
-    dependencies:
-      figures: 6.1.0
-      ink: 6.3.1(react@19.1.1)
-      react: 19.1.1
-      to-rotated: 1.0.0
 
   ink-text-input@6.0.0(ink@6.3.1(react@19.1.1))(react@19.1.1):
     dependencies:

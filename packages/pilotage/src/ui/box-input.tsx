@@ -1,13 +1,19 @@
 import { Box as InkBox, Text, useInput } from 'ink'
-import SelectInput from 'ink-select-input'
 import React, { useMemo, useState } from 'react'
 import { Level, LEVELCOLOR_MAP } from '@/config/level'
 import { RefTextInput, type RefTextInputHandle } from './ref-text-input'
+import SelectInput from './select'
+
+interface Suggestion {
+  title: string
+  desc?: string
+  value: string
+}
 
 interface BoxInputProps {
   onSubmit?: (value: string) => void
   placeholder?: string
-  suggestions?: string[] // 建议列表
+  suggestions?: Suggestion[] // 建议列表
   maxSuggestions?: number // 最大显示建议数
 }
 
@@ -34,11 +40,12 @@ export function BoxInput({
 
     return suggestions
       .filter(suggestion =>
-        suggestion.toLowerCase().includes(query.toLowerCase()))
+        suggestion.title.toLowerCase().includes(query.toLowerCase()))
       .slice(0, maxSuggestions)
       .map(suggestion => ({
-        label: suggestion,
-        value: suggestion,
+        label: suggestion.title,
+        value: suggestion.value,
+        description: suggestion.desc,
       }))
   }, [query, suggestions, maxSuggestions])
 
