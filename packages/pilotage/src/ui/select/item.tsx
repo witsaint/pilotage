@@ -1,11 +1,17 @@
-import { Text } from 'ink'
+import { Box, Text } from 'ink'
 import * as React from 'react'
 
 export interface Props {
   readonly isSelected?: boolean
   readonly label: string
+  readonly description?: string
 }
 
-export function ItemComponent({ isSelected = false, label }: Props): React.JSX.Element {
-  return <Text color={isSelected ? 'blue' : undefined}>{label}</Text>
+export function ItemComponent({ isSelected = false, label, description }: Props): React.JSX.Element {
+  return (
+    <Box flexDirection="row" gap={1} justifyContent="space-between">
+      <Text color={isSelected ? 'blue' : undefined}>{label}</Text>
+      {description && <Text color="gray">{description}</Text>}
+    </Box>
+  )
 }

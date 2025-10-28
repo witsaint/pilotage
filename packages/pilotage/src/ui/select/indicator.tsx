@@ -11,7 +11,7 @@ export function Indicator({ isSelected = false }: Props): React.JSX.Element {
     <Box marginRight={1}>
       {isSelected
         ? (
-            <Text color="blue">{figures.pointer}</Text>
+            <Text color="blue">{figures.lineDashed15}</Text>
           )
         : (
             <Text> </Text>

@@ -1,3 +1,4 @@
+import figures from 'figures'
 import { Box as InkBox, Text, useInput } from 'ink'
 import React, { useMemo, useState } from 'react'
 import { Level, LEVELCOLOR_MAP } from '@/config/level'
@@ -106,7 +107,7 @@ export function BoxInput({
         width="100%"
         gap={1}
       >
-        <Text>❯</Text>
+        <Text>{figures.pointer}</Text>
         {/* 使用包裹层 key 触发重挂载，TextInput 不接受自定义 key prop 类型声明 */}
         <RefTextInput
           ref={refInput}

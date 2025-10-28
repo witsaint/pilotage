@@ -21,15 +21,17 @@ export function RootApp(): React.JSX.Element {
       ))}
       <BoxInput
         onSubmit={onSubmit}
-        placeholder="输入命令 (如: /loading, /progress, /table, /json)"
+        placeholder="输入命令 (如: /init)"
         suggestions={[
           {
-            title: '/loading',
-            value: '/loading',
+            title: '/init',
+            desc: '初始化',
+            value: 'init',
           },
           {
             title: '/progress',
-            value: '/progress',
+            desc: '进度条',
+            value: 'progress',
           },
         ]}
         maxSuggestions={8}

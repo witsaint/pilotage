@@ -45,12 +45,12 @@
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
-    "figures": "^6.1.0",
+    "figures": "catalog:",
     "gradient-string": "catalog:",
     "ink": "catalog:",
     "ink-text-input": "catalog:",
     "react": "catalog:",
-    "to-rotated": "^1.0.0"
+    "to-rotated": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",
