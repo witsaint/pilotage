@@ -59,6 +59,7 @@
     "@types/execa": "catalog:testing",
     "@types/mock-fs": "catalog:testing",
     "@types/node": "catalog:types",
+    "@types/react": "catalog:",
     "@types/supertest": "catalog:testing",
     "@vitest/coverage-v8": "catalog:testing",
     "@vitest/ui": "catalog:testing",
