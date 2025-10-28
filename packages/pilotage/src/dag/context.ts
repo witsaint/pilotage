@@ -373,7 +373,9 @@ export function createContextScope<T extends ContextData = ContextData>(
 export function withContext<T extends ContextData = ContextData>(
   contextKey?: keyof T,
 ) {
-  return function <TTarget, TMethod extends (...args: any[]) => any>(
+  return function <TTarget, TMethod extends (
+    ...args: any[]
+  ) => any>(
     target: TTarget,
     propertyKey: string | symbol,
     descriptor: TypedPropertyDescriptor<TMethod>,

@@ -50,7 +50,7 @@ pnpm test-debug
 #### 基本测试示例
 
 ```typescript
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { main } from '../src/index'
 
 describe('main function', () => {
@@ -64,8 +64,8 @@ describe('main function', () => {
 #### CLI 测试示例
 
 ```typescript
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { CLITester, assert } from './utils/test-helpers'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { assert, CLITester } from './utils/test-helpers'
 
 describe('CLI Commands', () => {
   let cliTester: CLITester
@@ -82,7 +82,7 @@ describe('CLI Commands', () => {
     const result = await cliTester
       .setArgs(['--help'])
       .exec('node', ['--version'])
-    
+
     assert.commandSuccess(result)
     assert.outputContains(result, 'v')
   })
@@ -102,7 +102,8 @@ const cliTester = new CLITester()
 cliTester.setArgs(['--verbose', '--config', 'config.json'])
 
 // 设置环境变量
-cliTester.setEnv({ DEBUG: 'true', NODE_ENV: 'test' })
+cliTester.setEnv({ DEBUG: 'true',
+NODE_ENV: 'test' })
 
 // 设置工作目录
 cliTester.setCwd('/tmp/test-dir')
@@ -147,11 +148,11 @@ packageTester.createPnpmProject({
   version: '1.0.0',
   type: 'module',
   dependencies: {
-    'lodash': '^4.17.21',
+    lodash: '^4.17.21',
   },
   devDependencies: {
-    'typescript': '^5.0.0',
-    'vitest': '^3.0.0',
+    typescript: '^5.0.0',
+    vitest: '^3.0.0',
   },
 })
 
@@ -234,7 +235,7 @@ createTestFileSystem(files)
 ### 进程 Mock
 
 ```typescript
-import { mockProcess, mockArgv, mockEnv } from './mocks/process'
+import { mockArgv, mockEnv, mockProcess } from './mocks/process'
 
 // Mock 进程相关功能
 const { mockExit, mockStdout } = mockProcess()

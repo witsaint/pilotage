@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { Stats } from 'node:fs'
 import * as fs from 'node:fs'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // 示例 1: 使用 vi.mocked() 进行类型安全的 Mock
 describe('Mock Types Examples', () => {
@@ -12,7 +12,7 @@ describe('Mock Types Examples', () => {
     it('should mock with full type safety', () => {
       // 创建类型化的 mock
       const mockFs = vi.mocked(fs)
-      
+
       // 设置 mock 实现，有完整的类型提示
       mockFs.existsSync.mockImplementation((path) => {
         // path 参数有正确的类型提示
@@ -26,7 +26,7 @@ describe('Mock Types Examples', () => {
 
     it('should mock complex return types', () => {
       const mockFs = vi.mocked(fs)
-      
+
       // Mock 返回复杂的 Stats 对象
       mockFs.statSync.mockImplementation((path): Stats => {
         const isFile = String(path).endsWith('.txt')
@@ -85,12 +85,12 @@ describe('Mock Types Examples', () => {
     })
 
     it('should mock async functions with proper types', async () => {
-      type AsyncProcessor = (input: string) => Promise<{ result: string; timestamp: number }>
-      
+      type AsyncProcessor = (input: string) => Promise<{ result: string, timestamp: number }>
+
       const mockAsyncProcessor = vi.fn<AsyncProcessor>()
       mockAsyncProcessor.mockResolvedValue({
         result: 'processed',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       })
 
       const result = await mockAsyncProcessor('test input')
@@ -140,15 +140,15 @@ describe('Mock Types Examples', () => {
   describe('5. 自定义 Mock 类型', () => {
     // 定义自定义接口
     interface DatabaseConnection {
-      connect(): Promise<void>
-      query(sql: string): Promise<unknown[]>
-      close(): Promise<void>
+      connect: () => Promise<void>
+      query: (sql: string) => Promise<unknown[]>
+      close: () => Promise<void>
     }
 
     interface UserService {
-      findById(id: string): Promise<{ id: string; name: string } | null>
-      create(user: { name: string }): Promise<{ id: string; name: string }>
-      update(id: string, user: Partial<{ name: string }>): Promise<void>
+      findById: (id: string) => Promise<{ id: string, name: string } | null>
+      create: (user: { name: string }) => Promise<{ id: string, name: string }>
+      update: (id: string, user: Partial<{ name: string }>) => Promise<void>
     }
 
     it('should mock custom interfaces', () => {
@@ -188,7 +188,7 @@ describe('Mock Types Examples', () => {
 
     it('should mock entire modules with types', () => {
       const mockFs = vi.mocked(fs)
-      
+
       // 设置 mock 行为
       mockFs.existsSync.mockReturnValue(true)
       mockFs.readFileSync.mockReturnValue('content')
@@ -202,20 +202,20 @@ describe('Mock Types Examples', () => {
   describe('7. 泛型 Mock 类型', () => {
     // 泛型接口
     interface Repository<T> {
-      findById(id: string): Promise<T | null>
-      findAll(): Promise<T[]>
-      save(entity: T): Promise<T>
-      delete(id: string): Promise<void>
+      findById: (id: string) => Promise<T | null>
+      findAll: () => Promise<T[]>
+      save: (entity: T) => Promise<T>
+      delete: (id: string) => Promise<void>
     }
 
     it('should mock generic interfaces', () => {
-      type User = { id: string; name: string; email: string }
-      
+      interface User { id: string, name: string, email: string }
+
       // 创建泛型 mock
       const mockUserRepository: Repository<User> = {
         findById: vi.fn().mockResolvedValue({ id: '1', name: 'John', email: 'john@example.com' }),
         findAll: vi.fn().mockResolvedValue([]),
-        save: vi.fn().mockImplementation((user) => Promise.resolve(user)),
+        save: vi.fn().mockImplementation(user => Promise.resolve(user)),
         delete: vi.fn().mockResolvedValue(undefined),
       }
 

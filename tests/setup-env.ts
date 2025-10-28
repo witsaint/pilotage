@@ -1,6 +1,7 @@
-import { beforeAll, afterAll } from 'vitest'
-import { mockProcess } from './mocks/process'
+import process from 'node:process'
+import { afterAll, beforeAll, vi } from 'vitest'
 import { mockFs } from './mocks/fs'
+import { mockProcess } from './mocks/process'
 
 // 全局测试环境设置
 beforeAll(() => {
@@ -9,11 +10,11 @@ beforeAll(() => {
   process.env.TZ = 'UTC'
   process.env.DEBUG = 'false'
   process.env.LOG_LEVEL = 'error'
-  
+
   // 初始化 mocks
   mockProcess()
   mockFs()
-  
+
   // 设置测试超时
   vi.setConfig({
     testTimeout: 10000,

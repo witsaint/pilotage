@@ -7,6 +7,9 @@ export default antfu(
     pnpm: true,
     rules: {
       'no-console': 'off',
+      'max-len': ['error', {
+        code: 120,
+      }],
     },
   },
 )

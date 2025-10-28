@@ -5,21 +5,21 @@
 
 import type {
   IContextManager,
+  IEventEmitter,
   PipelineConfig,
   PipelineState,
   TaskId,
   TaskResult,
-  IEventEmitter,
 } from './types'
-import { PipelineEventType, TaskStatus } from './types'
-
 import {
-  type IGraphNode,
   type IGraphEdge,
+  type IGraphNode,
   NodeGraph,
   NodeStatus,
   TaskNode,
 } from './graph-node'
+
+import { PipelineEventType, TaskStatus } from './types'
 
 // ==================== 事件系统 ====================
 
@@ -66,8 +66,7 @@ export class EventEmitter implements IEventEmitter {
       return
 
     const promises = Array.from(eventListeners).map(listener =>
-      Promise.resolve(listener(event.data)),
-    )
+      Promise.resolve(listener(event.data)))
 
     await Promise.all(promises)
   }
@@ -129,7 +128,7 @@ export interface IDAGPipeline {
   readonly state: DAGPipelineState
 
   // ==================== 基础执行控制 ====================
-  
+
   /** 执行整个流程 */
   execute: () => Promise<DAGPipelineState>
   /** 暂停流程 */
@@ -140,7 +139,7 @@ export interface IDAGPipeline {
   stop: () => Promise<void>
 
   // ==================== 分步执行控制 ====================
-  
+
   /** 执行下一个可执行的节点 */
   next: () => Promise<{ nodeId: string, result: Record<string, unknown> } | null>
   /** 执行指定数量的节点步骤 */
@@ -151,7 +150,7 @@ export interface IDAGPipeline {
   executeWhile: (condition: (state: DAGPipelineState) => boolean) => Promise<DAGPipelineState>
 
   // ==================== 节点控制 ====================
-  
+
   /** 获取下一个将要执行的节点 */
   getNextNode: () => IGraphNode | null
   /** 获取当前可执行的节点列表 */
@@ -162,7 +161,7 @@ export interface IDAGPipeline {
   retryNode: (nodeId: string) => Promise<Record<string, unknown>>
 
   // ==================== 状态查询 ====================
-  
+
   /** 获取执行进度 */
   getProgress: () => number
   /** 等待特定节点完成 */
@@ -299,7 +298,8 @@ export class DAGPipeline implements IDAGPipeline {
 
     try {
       const result = await this.executeNode(nextNode)
-      return { nodeId: nextNode.id, result }
+      return { nodeId: nextNode.id,
+result }
     }
     catch (error) {
       throw new Error(`Failed to execute next node ${nextNode.id}: ${error}`)
@@ -379,12 +379,14 @@ export class DAGPipeline implements IDAGPipeline {
 
     // 设置节点状态为跳过
     this._state.nodeStates.set(nodeId, NodeStatus.SKIPPED)
-    this._state.nodeResults.set(nodeId, { skipped: true, reason })
+    this._state.nodeResults.set(nodeId, { skipped: true,
+reason })
 
     // 触发节点跳过事件
     await this.emitEvent(PipelineEventType.TASK_FAILED, {
       taskId: nodeId,
-      result: { skipped: true, reason },
+      result: { skipped: true,
+reason },
     })
   }
 
@@ -407,7 +409,7 @@ export class DAGPipeline implements IDAGPipeline {
   getProgress(): number {
     const totalNodes = this.nodeGraph.getAllNodes().length
     const completedNodes = Array.from(this._state.nodeStates.values()).filter(
-      status => status === NodeStatus.SUCCESS || status === NodeStatus.FAILED || status === NodeStatus.SKIPPED
+      status => status === NodeStatus.SUCCESS || status === NodeStatus.FAILED || status === NodeStatus.SKIPPED,
     ).length
 
     return totalNodes > 0 ? completedNodes / totalNodes : 0
@@ -444,7 +446,8 @@ export class DAGPipeline implements IDAGPipeline {
       }
 
       const node = this.nodeGraph.getNode(nodeId)
-      if (!node) continue
+      if (!node)
+        continue
 
       // 检查节点是否已被跳过
       if (this._state.nodeStates.get(nodeId) === NodeStatus.SKIPPED) {

@@ -1,23 +1,23 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-  getTerminalSize,
-  supportsColor,
+  formatSizeInfo,
+  getLayoutConfig,
+  getRecommendedConfig,
   getResponsiveSize,
   getScreenSizeCategory,
-  getRecommendedConfig,
   getSmartResponsiveSize,
-  isSmallScreen,
-  isLargeScreen,
-  getLayoutConfig,
-  formatSizeInfo,
   getTerminalCapabilities,
-  type TerminalSize,
+  getTerminalSize,
+  isLargeScreen,
+  isSmallScreen,
+  type LayoutConfig,
   type ResponsiveConfig,
   type ScreenSize,
-  type LayoutConfig,
+  supportsColor,
+  type TerminalSize,
 } from '../../packages/pilotage/src/utils/screen'
 
-describe('Screen Utils', () => {
+describe('screen Utils', () => {
   let originalEnv: NodeJS.ProcessEnv
 
   beforeEach(() => {
@@ -487,7 +487,7 @@ describe('Screen Utils', () => {
     })
   })
 
-  describe('Usage Examples', () => {
+  describe('usage Examples', () => {
     it('should demonstrate basic usage patterns', () => {
       // Example 1: Basic terminal size detection
       const terminalSize = getTerminalSize()
@@ -521,11 +521,11 @@ describe('Screen Utils', () => {
 
     it('should demonstrate different screen size configurations', () => {
       const sizes: Array<'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'xxl'> = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl']
-      
+
       sizes.forEach((size) => {
         const config = getSmartResponsiveSize({}, size)
         const layout = getLayoutConfig()
-        
+
         expect(config.width).toBeGreaterThan(0)
         expect(config.height).toBeGreaterThan(0)
         expect(layout.columns).toBeGreaterThan(0)

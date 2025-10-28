@@ -201,8 +201,7 @@ export class FileStateManager implements IStateManager {
    */
   async saveBatch(states: Record<string, unknown>): Promise<void> {
     const promises = Object.entries(states).map(([key, data]) =>
-      this.save(key, data),
-    )
+      this.save(key, data))
 
     await Promise.all(promises)
   }
@@ -502,8 +501,7 @@ export class StateSnapshotManager {
     }
 
     return snapshots.sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    )
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
   }
 }
 

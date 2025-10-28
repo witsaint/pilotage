@@ -406,10 +406,16 @@ export class ConditionNode implements IGraphNode {
       this.status = NodeStatus.SUCCESS
 
       if (result) {
-        return { true: inputData, false: undefined }
+        return {
+          true: inputData,
+          false: undefined,
+        }
       }
       else {
-        return { true: undefined, false: inputData }
+        return {
+          true: undefined,
+          false: inputData,
+        }
       }
     }
     catch (error) {

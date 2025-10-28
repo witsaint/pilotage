@@ -1,6 +1,8 @@
-import { vi } from 'vitest'
+import type { TestResult } from 'tests/types/test-types'
+import process from 'node:process'
 import { execa } from 'execa'
-import { mockArgv, mockEnv, mockCwd } from '../mocks/process'
+import { vi } from 'vitest'
+import { mockArgv, mockCwd, mockEnv } from '../mocks/process'
 
 // 命令行测试工具
 export class CLITester {
@@ -15,25 +17,25 @@ export class CLITester {
   }
 
   // 设置命令行参数
-  setArgs(args: string[]) {
+  setArgs(args: string[]): this {
     mockArgv(args)
     return this
   }
 
   // 设置环境变量
-  setEnv(env: Record<string, string>) {
+  setEnv(env: Record<string, string>): this {
     mockEnv(env)
     return this
   }
 
   // 设置工作目录
-  setCwd(cwd: string) {
+  setCwd(cwd: string): this {
     mockCwd(cwd)
     return this
   }
 
   // 执行命令
-  async exec(command: string, args: string[] = []) {
+  async exec(command: string, args: string[] = []): Promise<TestResult> {
     try {
       const result = await execa(command, args, {
         cwd: process.cwd(),
@@ -46,7 +48,8 @@ export class CLITester {
         stdout: result.stdout,
         stderr: result.stderr,
       }
-    } catch (error: any) {
+    }
+    catch (error: any) {
       return {
         success: false,
         exitCode: error.exitCode || 1,
@@ -57,7 +60,7 @@ export class CLITester {
   }
 
   // 恢复原始状态
-  restore() {
+  restore(): void {
     process.argv = this.originalArgv
     process.env = this.originalEnv
     process.cwd = () => this.originalCwd
@@ -69,13 +72,13 @@ export class FileSystemTester {
   private files: Record<string, string> = {}
 
   // 添加文件
-  addFile(path: string, content: string) {
+  addFile(path: string, content: string): this {
     this.files[path] = content
     return this
   }
 
   // 添加目录
-  addDirectory(path: string) {
+  addDirectory(path: string): this {
     this.files[path] = ''
     return this
   }
@@ -96,42 +99,42 @@ export class FileSystemTester {
   }
 
   // 清理
-  clear() {
+  clear(): void {
     this.files = {}
   }
 }
 
 // 异步测试工具
-export async function waitFor(condition: () => boolean, timeout = 5000) {
+export async function waitFor(condition: () => boolean, timeout = 5000): Promise<boolean> {
   const start = Date.now()
-  
+
   while (Date.now() - start < timeout) {
     if (condition()) {
       return true
     }
     await new Promise(resolve => setTimeout(resolve, 10))
   }
-  
+
   throw new Error(`Condition not met within ${timeout}ms`)
 }
 
 // 捕获控制台输出
-export function captureConsole() {
+export function captureConsole(): { logs: string[], restore: () => void } {
   const originalConsole = { ...console }
   const logs: string[] = []
-  
+
   console.log = vi.fn((...args) => {
     logs.push(args.join(' '))
   })
-  
+
   console.error = vi.fn((...args) => {
     logs.push(`ERROR: ${args.join(' ')}`)
   })
-  
+
   console.warn = vi.fn((...args) => {
     logs.push(`WARN: ${args.join(' ')}`)
   })
-  
+
   return {
     logs,
     restore: () => {
@@ -140,54 +143,28 @@ export function captureConsole() {
   }
 }
 
-// 模拟用户输入
-export function mockUserInput(inputs: string[]) {
-  const mockStdin = {
-    read: vi.fn(),
-    on: vi.fn((event: string, callback: Function) => {
-      if (event === 'data') {
-        // 模拟用户输入
-        inputs.forEach((input, index) => {
-          setTimeout(() => {
-            callback(Buffer.from(input + '\n'))
-          }, index * 100)
-        })
-      }
-    }),
-    once: vi.fn(),
-    emit: vi.fn(),
-  }
-  
-  Object.defineProperty(process, 'stdin', {
-    value: mockStdin,
-    writable: true,
-  })
-  
-  return mockStdin
-}
-
 // 测试数据生成器
 export const testData = {
   // 生成随机字符串
   randomString(length = 10): string {
     return Math.random().toString(36).substring(2, 2 + length)
   },
-  
+
   // 生成随机数字
   randomNumber(min = 0, max = 100): number {
     return Math.floor(Math.random() * (max - min + 1)) + min
   },
-  
+
   // 生成随机邮箱
   randomEmail(): string {
     return `test${this.randomNumber(1000, 9999)}@example.com`
   },
-  
+
   // 生成随机文件路径
   randomFilePath(extension = 'txt'): string {
     return `/tmp/test-${this.randomString()}.${extension}`
   },
-  
+
   // 生成测试配置对象
   testConfig(overrides: Record<string, any> = {}): Record<string, any> {
     return {
@@ -208,7 +185,7 @@ export const assert = {
     }
     return result
   },
-  
+
   // 断言命令执行失败
   commandFailure(result: any) {
     if (result.success) {
@@ -216,7 +193,7 @@ export const assert = {
     }
     return result
   },
-  
+
   // 断言输出包含特定内容
   outputContains(result: any, text: string) {
     if (!result.stdout.includes(text)) {
@@ -224,7 +201,7 @@ export const assert = {
     }
     return result
   },
-  
+
   // 断言错误输出包含特定内容
   errorContains(result: any, text: string) {
     if (!result.stderr.includes(text)) {

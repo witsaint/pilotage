@@ -3,12 +3,12 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { dagGraph, dagNode } from '../packages/pilotage/src/core/dag-graph'
+import { dagGraph, dagNode } from '../packages/pilotage/src/dag/dag-graph'
 
 // 空输入类型
 type EmptyInput = Record<string, never>
 
-describe('DAG Graph Type Safety', () => {
+describe('dAG Graph Type Safety', () => {
   it('应该能检测到错误的节点连接', () => {
     const graph = dagGraph()
 
@@ -22,7 +22,7 @@ describe('DAG Graph Type Safety', () => {
     const processor = dagNode<{ input: string }, { result: string }>({
       id: 'processor',
       name: '处理器',
-      executor: async (inputs) => ({ result: inputs.input.toUpperCase() }),
+      executor: async inputs => ({ result: inputs.input.toUpperCase() }),
     })
 
     // 添加节点
@@ -32,9 +32,7 @@ describe('DAG Graph Type Safety', () => {
     graph.addEdge({
       id: 'correct_edge',
       sourceNodeId: 'source',
-      sourcePort: 'data',
       targetNodeId: 'processor',
-      targetPort: 'input',
     })
 
     // 这个测试主要是为了验证类型系统
@@ -62,7 +60,7 @@ describe('DAG Graph Type Safety', () => {
     const lengthNode = dagNode<{ length: number }, { value: number }>({
       id: 'length',
       name: '长度节点',
-      executor: async (inputs) => ({ value: inputs.length * 2 }),
+      executor: async inputs => ({ value: inputs.length * 2 }),
     })
 
     graph.addNode(textNode).addNode(lengthNode)
@@ -71,9 +69,7 @@ describe('DAG Graph Type Safety', () => {
     graph.addEdge({
       id: 'text_to_length',
       sourceNodeId: 'text',
-      sourcePort: 'text',      // string
       targetNodeId: 'length',
-      targetPort: 'length',    // number
       transform: (text: string) => text.length,
     })
 

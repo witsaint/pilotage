@@ -937,8 +937,7 @@ export async function dagGraphOperationsExample(): Promise<void> {
         console.log(`执行节点 ${id}`)
         return { value: inputs.value + 1 }
       },
-    }),
-  )
+    }))
 
   nodes.forEach(node => graph.addNode(node))
 

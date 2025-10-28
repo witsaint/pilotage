@@ -7,7 +7,7 @@
       "role": "admin"
     },
     {
-      "id": "user-2", 
+      "id": "user-2",
       "name": "Jane Smith",
       "email": "jane@example.com",
       "role": "user"

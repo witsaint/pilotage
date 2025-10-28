@@ -1,4 +1,5 @@
-import { beforeAll, afterAll, beforeEach, afterEach } from 'vitest'
+import process from 'node:process'
+import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from 'vitest'
 
 // 全局测试设置
 beforeAll(async () => {
@@ -27,13 +28,11 @@ afterAll(async () => {
 import '@testing-library/jest-dom'
 
 // 全局测试工具
-declare global {
-  namespace Vi {
-    interface Assertion<T = any> {
-      toBeValidCommand(): T
-      toHaveValidOutput(): T
-      toBeValidCLI(): T
-    }
+declare module 'vitest' {
+  interface Assertion<T = any> {
+    toBeValidCommand: () => T
+    toHaveValidOutput: () => T
+    toBeValidCLI: () => T
   }
 }
 
@@ -46,7 +45,7 @@ expect.extend({
       message: () => `expected ${received} to be a valid command`,
     }
   },
-  
+
   toHaveValidOutput(received: any) {
     const isValid = received !== null && received !== undefined
     return {
@@ -54,7 +53,7 @@ expect.extend({
       message: () => `expected ${received} to have valid output`,
     }
   },
-  
+
   toBeValidCLI(received: any) {
     const isValid = received && typeof received === 'object' && 'command' in received
     return {

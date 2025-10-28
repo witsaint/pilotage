@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-describe('Banner UI Components - Parameter Testing', () => {
+describe('banner UI Components - Parameter Testing', () => {
   describe('renderBanner parameter handling', () => {
     it('should handle default parameters', () => {
       // Test parameter destructuring and default values
@@ -82,7 +82,7 @@ describe('Banner UI Components - Parameter Testing', () => {
     })
   })
 
-  describe('Box component props', () => {
+  describe('box component props', () => {
     it('should accept required props', () => {
       const props = {
         title: 'Test Title',
@@ -123,7 +123,7 @@ describe('Banner UI Components - Parameter Testing', () => {
     })
   })
 
-  describe('Parameter validation scenarios', () => {
+  describe('parameter validation scenarios', () => {
     it('should handle empty props object', () => {
       const props = {}
       const {
@@ -173,7 +173,7 @@ describe('Banner UI Components - Parameter Testing', () => {
     })
   })
 
-  describe('Integration scenarios', () => {
+  describe('integration scenarios', () => {
     it('should simulate complete parameter workflow', () => {
       // Simulate a complete workflow with different parameter combinations
       const scenarios = [

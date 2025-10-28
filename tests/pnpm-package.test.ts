@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { PnpmPackageTester, createPnpmPackageTestEnvironment, mockPnpmCommand } from './mocks/fs'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { createPnpmPackageTestEnvironment, mockPnpmCommand, PnpmPackageTester } from './mocks/fs'
 
-describe('PNPM Package Testing', () => {
+describe('pNPM Package Testing', () => {
   let packageTester: PnpmPackageTester
 
   beforeEach(() => {
@@ -12,7 +12,7 @@ describe('PNPM Package Testing', () => {
     packageTester.clear()
   })
 
-  describe('Package Structure Creation', () => {
+  describe('package Structure Creation', () => {
     it('should create a basic pnpm package structure', () => {
       packageTester
         .createPnpmProject({
@@ -41,7 +41,7 @@ describe('PNPM Package Testing', () => {
         })
 
       expect(packageTester.hasFile('pnpm-workspace.yaml')).toBe(true)
-      
+
       const workspaceContent = packageTester.getFile('pnpm-workspace.yaml')
       expect(workspaceContent).toContain('packages:')
       expect(workspaceContent).toContain('packages/*')
@@ -53,38 +53,38 @@ describe('PNPM Package Testing', () => {
         .createPnpmProject({
           name: 'custom-package',
           dependencies: {
-            'lodash': '^4.17.21',
-            'axios': '^1.6.0',
+            lodash: '^4.17.21',
+            axios: '^1.6.0',
           },
           devDependencies: {
-            'typescript': '^5.0.0',
-            'vitest': '^3.0.0',
+            typescript: '^5.0.0',
+            vitest: '^3.0.0',
           },
           scripts: {
-            'build': 'tsc',
-            'test': 'vitest',
-            'lint': 'eslint .',
+            build: 'tsc',
+            test: 'vitest',
+            lint: 'eslint .',
           },
         })
 
       const packageJson = packageTester.getPackageJson()
       expect(packageJson.dependencies).toEqual({
-        'lodash': '^4.17.21',
-        'axios': '^1.6.0',
+        lodash: '^4.17.21',
+        axios: '^1.6.0',
       })
       expect(packageJson.devDependencies).toEqual({
-        'typescript': '^5.0.0',
-        'vitest': '^3.0.0',
+        typescript: '^5.0.0',
+        vitest: '^3.0.0',
       })
       expect(packageJson.scripts).toMatchObject({
-        'build': 'tsc',
-        'test': 'vitest',
-        'lint': 'eslint .',
+        build: 'tsc',
+        test: 'vitest',
+        lint: 'eslint .',
       })
     })
   })
 
-  describe('File Management', () => {
+  describe('file Management', () => {
     it('should add source files', () => {
       packageTester
         .addSourceFile('src/index.ts', 'export function main() { return "Hello, World!" }')
@@ -136,7 +136,7 @@ describe('PNPM Package Testing', () => {
     })
   })
 
-  describe('Package.json Management', () => {
+  describe('package.json Management', () => {
     it('should merge package.json configurations', () => {
       packageTester
         .addPackageJson({
@@ -204,7 +204,7 @@ describe('PNPM Package Testing', () => {
     })
   })
 
-  describe('PNPM Workspace Testing', () => {
+  describe('pNPM Workspace Testing', () => {
     it('should create workspace with multiple packages', () => {
       packageTester
         .addPnpmWorkspace({
@@ -216,7 +216,7 @@ describe('PNPM Package Testing', () => {
             'packages/core': {
               version: '1.0.0',
               dependencies: {
-                'typescript': '^5.0.0',
+                typescript: '^5.0.0',
               },
             },
           },
@@ -252,7 +252,7 @@ describe('PNPM Package Testing', () => {
     })
   })
 
-  describe('File System Integration', () => {
+  describe('file System Integration', () => {
     it('should work with file system mocks', async () => {
       packageTester
         .createPnpmProject({
@@ -291,7 +291,7 @@ describe('PNPM Package Testing', () => {
     })
   })
 
-  describe('PNPM Command Mocking', () => {
+  describe('pNPM Command Mocking', () => {
     it('should mock pnpm commands', () => {
       const { mockExeca, executePnpm } = mockPnpmCommand('pnpm', ['install'])
 
@@ -320,7 +320,7 @@ describe('PNPM Package Testing', () => {
     })
   })
 
-  describe('Real-world Package Scenarios', () => {
+  describe('real-world Package Scenarios', () => {
     it('should create a TypeScript library package', () => {
       packageTester
         .createPnpmProject({
@@ -329,7 +329,7 @@ describe('PNPM Package Testing', () => {
           description: 'A TypeScript library',
           type: 'module',
           dependencies: {
-            'lodash': '^4.17.21',
+            lodash: '^4.17.21',
           },
           devDependencies: {
             'typescript': '^5.0.0',
@@ -426,7 +426,7 @@ describe('add', () => {
           main: './dist/index.mjs',
           types: './dist/index.d.ts',
           dependencies: {
-            'lodash': '^4.17.21',
+            lodash: '^4.17.21',
           },
         }, null, 2))
         .addSourceFile('packages/core/src/index.ts', 'export const CORE_VERSION = "1.0.0"')

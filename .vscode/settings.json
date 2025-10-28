@@ -1,8 +1,8 @@
 {
-  "prettier.enable": false,
   "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
+    "source.fixAll.eslint": "always",
+    "source.fixAll": "always",
     "source.organizeImports": "never"
   },
   "eslint.rules.customizations": [
@@ -12,7 +12,6 @@
     { "rule": "*-spaces", "severity": "off" },
     { "rule": "*-order", "severity": "off" },
     { "rule": "*-dangle", "severity": "off" },
-    { "rule": "*-newline", "severity": "off" },
     { "rule": "*quotes", "severity": "off" },
     { "rule": "*semi", "severity": "off" }
   ],

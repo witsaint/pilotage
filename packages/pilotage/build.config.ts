@@ -12,7 +12,10 @@ export default defineBuildConfig({
     emitCJS: true,
     resolve: {},
     alias: {
-      entries: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
+      entries: [{
+        find: '@',
+        replacement: path.resolve(__dirname, 'src'),
+      }],
     },
     esbuild: {
       minify: !isDev,

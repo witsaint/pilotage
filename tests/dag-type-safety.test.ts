@@ -3,11 +3,11 @@
  * 验证类型推导功能是否正常工作
  */
 
+import { dag } from 'packages/pilotage/src/dag'
 import { describe, expect, it } from 'vitest'
-import { dag } from '../packages/pilotage/src/core/dag-builder'
 
-describe('DAG Builder - Type Safety', () => {
-  describe('Basic Type Inference', () => {
+describe('dAG Builder - Type Safety', () => {
+  describe('basic Type Inference', () => {
     it('should infer types correctly in a simple pipeline', async () => {
       const pipeline = dag()
         .id('test-basic')
@@ -58,7 +58,7 @@ describe('DAG Builder - Type Safety', () => {
     })
   })
 
-  describe('Parallel Processing with Type Inference', () => {
+  describe('parallel Processing with Type Inference', () => {
     it('should infer types in parallel branches', async () => {
       const pipeline = dag()
         .id('test-parallel')
@@ -129,7 +129,7 @@ describe('DAG Builder - Type Safety', () => {
     })
   })
 
-  describe('Complex Type Transformations', () => {
+  describe('complex Type Transformations', () => {
     interface User {
       id: number
       name: string
@@ -169,7 +169,7 @@ describe('DAG Builder - Type Safety', () => {
     })
   })
 
-  describe('Conditional Branches', () => {
+  describe('conditional Branches', () => {
     it('should support conditional type inference', async () => {
       const pipeline = dag()
         .id('test-conditional')
@@ -179,7 +179,7 @@ describe('DAG Builder - Type Safety', () => {
         })
         .condition(
           'validate',
-          (data) => data.value > 5,
+          data => data.value > 5,
         )
         .onTrue('success', async (data) => {
           return { ...data, status: 'success' as const }
@@ -198,7 +198,7 @@ describe('DAG Builder - Type Safety', () => {
     })
   })
 
-  describe('Three Parallel Branches', () => {
+  describe('three Parallel Branches', () => {
     it('should handle three parallel branches with correct types', async () => {
       const pipeline = dag()
         .id('test-three-parallel')
@@ -245,7 +245,7 @@ describe('DAG Builder - Type Safety', () => {
     })
   })
 
-  describe('Type Safety Checks', () => {
+  describe('type Safety Checks', () => {
     it('should maintain type safety through the entire pipeline', () => {
       // 这个测试主要用于编译时类型检查
       // 如果类型不正确，TypeScript 会在编译时报错
@@ -270,4 +270,3 @@ describe('DAG Builder - Type Safety', () => {
     })
   })
 })
-

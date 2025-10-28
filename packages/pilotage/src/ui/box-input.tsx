@@ -34,8 +34,7 @@ export function BoxInput({
 
     return suggestions
       .filter(suggestion =>
-        suggestion.toLowerCase().includes(query.toLowerCase()),
-      )
+        suggestion.toLowerCase().includes(query.toLowerCase()))
       .slice(0, maxSuggestions)
       .map(suggestion => ({
         label: suggestion,
@@ -47,14 +46,12 @@ export function BoxInput({
   useInput((input, key) => {
     if (key.upArrow && filteredSuggestions.length > 0) {
       setSelectedIndex(prev =>
-        prev > 0 ? prev - 1 : filteredSuggestions.length - 1,
-      )
+        prev > 0 ? prev - 1 : filteredSuggestions.length - 1)
     }
 
     if (key.downArrow && filteredSuggestions.length > 0) {
       setSelectedIndex(prev =>
-        prev < filteredSuggestions.length - 1 ? prev + 1 : 0,
-      )
+        prev < filteredSuggestions.length - 1 ? prev + 1 : 0)
     }
 
     if (key.tab && filteredSuggestions.length > 0) {
