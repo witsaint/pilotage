@@ -1,27 +1,16 @@
+import type { InputInfo } from '@/types/input'
 import type { Message, MessageContent, MessageMeta, MessageType } from '@/types/message'
-import type { Suggestion } from '@/ui/box-input'
 import { useStore } from '@/utils/use-store'
 
-const inputInfo: {
-  placeholder: string
-  suggestions: Suggestion[]
-} = {
+const inputInfo: InputInfo = {
   placeholder: 'Enter your input',
   suggestions: [],
 }
 
 export const { subscribe: subscribeInputInfo, get: getInputInfo, set: emitInputInfo } = useStore<typeof inputInfo>(inputInfo)
 
-export function setInputInfo(): void {
-  emitInputInfo({
-    placeholder: 'Enter your input1',
-    suggestions: [
-      {
-        title: 'test',
-        value: 'test',
-      },
-    ],
-  })
+export function setInputInfo(inputInfo: InputInfo): void {
+  emitInputInfo(inputInfo)
 }
 
 const messages: Message<MessageType>[] = []

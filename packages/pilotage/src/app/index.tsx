@@ -4,14 +4,13 @@ import React, { useSyncExternalStore } from 'react'
 import { MessageType } from '@/types/message'
 import { BoxInput } from '@/ui/box-input'
 import { HistoryComponent } from './compt/history'
-import { addMessage, getInputInfo, getMessages, setInputInfo, subscribeInputInfo, subscribeMessages } from './store'
+import { addMessage, getInputInfo, getMessages, subscribeInputInfo, subscribeMessages } from './store'
 
 export function RootApp(): React.JSX.Element {
   const messages = useSyncExternalStore(subscribeMessages, getMessages)
   const inputInfo = useSyncExternalStore(subscribeInputInfo, getInputInfo)
   const onSubmit = (value: string): void => {
     addMessage(value, MessageType.String)
-    setInputInfo()
   }
 
   return (
