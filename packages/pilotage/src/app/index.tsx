@@ -10,7 +10,7 @@ export function RootApp(): React.JSX.Element {
   const messages = useSyncExternalStore(subscribeMessages, getMessages)
   const inputInfo = useSyncExternalStore(subscribeInputInfo, getInputInfo)
   const onSubmit = (value: string): void => {
-    addMessage(value, MessageType.String)
+    addMessage(`⚛ ${value}`, MessageType.String)
   }
 
   return (
