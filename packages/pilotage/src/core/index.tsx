@@ -22,8 +22,13 @@ export function initialize(): void {
   }
   else {
     listItems.push({
-      title: 'Pilotage is not initialized yet',
-      desc: 'Pilotage is not initialized yet, please set your channel by /use <channel> the default channel is Gitlab',
+      title: 'Pilotage is not Starteds yet',
+      desc: 'Please set your channel by /use <channel> the default channel is Gitlab',
+    })
+    listItems.push({
+      title: '/use <channel>',
+      titleColor: 'cyan',
+      desc: 'Set your channel by /use <channel> the default channel is Gitlab',
     })
     setStatus(Status.NOT_STARTED)
   }
