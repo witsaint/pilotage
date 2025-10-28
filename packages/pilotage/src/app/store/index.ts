@@ -1,21 +1,21 @@
-import type { Message, MessageMeta } from '@/types/message'
+import type { Message, MessageContent, MessageMeta, MessageType } from '@/types/message'
 
-let messages: Message[] = []
+let messages: Message<MessageType>[] = []
 let listeners: (() => void)[] = []
 
-export function addMessage<T extends Message>(
-  content: T['content'],
-  type: T['type'],
+export function addMessage<T extends MessageType>(
+  content: MessageContent[T],
+  type: T,
   config?: { metadata?: MessageMeta, props?: Record<string, any> },
 ): void {
-  const message: T = {
+  const message: Message<T> = {
     id: crypto.randomUUID(),
     type,
-    content: content as T['content'],
+    content,
     timestamp: Date.now(),
     metadata: config?.metadata,
     props: config?.props,
-  } as T
+  }
   messages = [...messages, message]
   emitChange()
 }
@@ -27,7 +27,7 @@ export function subscribe(listener: () => void): () => void {
   }
 }
 
-export function getMessages(): Message[] {
+export function getMessages(): Message<MessageType>[] {
   return messages
 }
 

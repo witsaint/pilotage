@@ -1,11 +1,5 @@
 import process from 'node:process'
 import gradient from 'gradient-string'
-import { render } from 'ink'
-import React from 'react'
-import { Level } from '@/config/level'
-import { sizeManager } from '../utils/size-manager'
-import { BoxInput } from './box-input'
-import { BoxTitle } from './box-title'
 
 function getLogoStr(): string {
   return `                       
@@ -15,8 +9,7 @@ function getLogoStr(): string {
  _|        _|  _|  _|    _|    _|      _|    _|  _|    _|  _|        
  _|        _|  _|    _|_|        _|_|    _|_|_|    _|_|_|    _|_|_|  
                                                        _|            
-                                                   _|_|                                                                                                                   
-`
+                                                   _|_|`
 }
 
 function padText(originStr: string, totalLen: number, splitStr: string): string {
@@ -31,8 +24,8 @@ function getLogo(version: string): string {
   const _logoStrs = logo.split('\n')
   const maxLen = 70
 
-  const welLine = _logoStrs.length - 3
-  const versionLine = _logoStrs.length - 2
+  const welLine = _logoStrs.length - 2
+  const versionLine = _logoStrs.length - 1
 
   const versionStr = `Version: ${version}`
 

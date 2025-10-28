@@ -9,11 +9,12 @@ interface TextComponentProps extends ComponentPropBase<MessageType.String> {
 }
 
 /**
- *
- * @param content - The content to display
- * @param maxRows - The maximum number of rows to display
- * @param maxLength - The maximum length of the content to display
- * @returns
+ * TextComponent - 显示文本内容的组件
+ * @param props - 组件属性
+ * @param props.content - 要显示的内容
+ * @param props.maxRows - 最大显示行数
+ * @param props.maxLength - 最大显示长度
+ * @returns React JSX 元素
  */
 export function TextComponent(
   { content, maxRows, maxLength }: TextComponentProps,

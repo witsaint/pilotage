@@ -13,7 +13,7 @@ export function RootApp(): React.JSX.Element {
   }
 
   return (
-    <Box flexDirection="column" padding={1}>
+    <Box flexDirection="column">
       {messages.map(message => (
         <Box key={message.id} marginTop={1}>
           <HistoryComponent message={message} />

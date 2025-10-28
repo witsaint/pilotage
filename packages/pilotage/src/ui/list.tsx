@@ -4,7 +4,7 @@ import React from 'react'
 type ListStyle = 'tree' | 'bullet' | 'dash' | 'none'
 type StatusColor = 'green' | 'yellow' | 'red' | 'blue' | 'gray' | 'cyan' | 'magenta' | 'white'
 
-interface ListItem {
+export interface ListItem {
   title: string
   desc?: string
   titleColor?: string
@@ -13,7 +13,7 @@ interface ListItem {
   showStatus?: boolean
 }
 
-interface ListProps {
+export interface ListProps {
   title?: string
   titleColor?: string
   items: ListItem[]
@@ -62,7 +62,7 @@ export function List({
         </Box>
       )}
 
-      {items.map((item, index) => {
+      {items?.map((item, index) => {
         const isLast = index === items.length - 1
         const prefix = getPrefix(index, isLast)
         const itemTitleColor = item.titleColor || defaultTitleColor

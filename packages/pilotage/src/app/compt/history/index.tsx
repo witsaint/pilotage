@@ -6,5 +6,5 @@ import { historyRoute } from './route'
 export function HistoryComponent({ message }: { message: Message }): React.JSX.Element {
   // 根据消息类型动态渲染不同的组件
   const Component = historyRoute(message.type)
-  return <Component content={message.content} />
+  return <Component content={message.content} {...message.props} />
 }
