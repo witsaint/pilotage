@@ -1,4 +1,4 @@
-type Setter<T> = T | ((data: T) => void)
+type Setter<T> = T | ((data: T) => T)
 
 export function useStore<T>(data: T): {
   data: T
@@ -25,10 +25,10 @@ export function useStore<T>(data: T): {
     get: () => _data,
     set: (prop: Setter<T>) => {
       if (typeof prop === 'function') {
-        (prop as (data: T) => void)(_data)
+        _data = (prop as (data: T) => T)(_data)
       }
       else {
-        _data = Object.assign({}, prop)
+        _data = structuredClone(prop)
       }
       emitChange()
     },

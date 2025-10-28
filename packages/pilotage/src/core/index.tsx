@@ -5,6 +5,8 @@ import { RootApp } from '@/app/index'
 import { addMessage } from '@/app/store'
 import { hasInitialized } from '@/config/root-config'
 import { MessageType } from '@/types/message'
+import { setStatus } from '@/events/status'
+import { Status } from '@/config/status'
 
 /**
  * 初始化应用
@@ -20,9 +22,10 @@ export function initialize(): void {
   }
   else {
     listItems.push({
-      title: '未初始化',
-      desc: '未初始化',
+      title: 'Pilotage is not initialized yet',
+      desc: 'Pilotage is not initialized yet, please set your channel by /use <channel> the default channel is Gitlab',
     })
+    setStatus(Status.NOT_STARTED)
   }
 
   addMessage(listItems, MessageType.List, {

@@ -31,6 +31,6 @@ export function addMessage<T extends MessageType>(
     props: config?.props,
   }
   setMessages((messages) => {
-    messages.push(message)
+    return [...messages, message]
   })
 }
