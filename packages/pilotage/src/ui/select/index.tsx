@@ -1,8 +1,9 @@
 import type { Props as ItemProps } from './item.js'
 import { isDeepStrictEqual } from 'node:util'
 import { Box, useInput } from 'ink'
-import React, { type FC, useCallback, useEffect, useRef, useState } from 'react'
+import React, { type FC, use, useCallback, useEffect, useRef, useState } from 'react'
 import arrayToRotated from 'to-rotated'
+import { getResponsiveSize } from '@/utils/screen.js'
 import { Indicator, type Props as IndicatorProps } from './indicator.js'
 import { ItemComponent } from './item.js'
 
@@ -80,6 +81,7 @@ export function SelectInput<V>({
     initialIndex ? (initialIndex > lastIndex ? lastIndex : initialIndex) : 0,
   )
   const previousItems = useRef<Array<Item<V>>>(items)
+  const labelWidth = useRef<number>(undefined)
 
   useEffect(() => {
     if (
@@ -91,6 +93,10 @@ export function SelectInput<V>({
       setRotateIndex(0)
       setSelectedIndex(0)
     }
+    // items 中最大的 label 长度
+    const maxLabelLength = Math.max(...items.map(item => item.label.length))
+
+    labelWidth.current = Math.min(maxLabelLength, getResponsiveSize().width)
 
     previousItems.current = items
   }, [items])
@@ -189,7 +195,7 @@ export function SelectInput<V>({
         return (
           <Box key={item.key ?? item.value}>
             {React.createElement(indicatorComponent, { isSelected })}
-            {React.createElement(itemComponent, { ...item, isSelected })}
+            {React.createElement(itemComponent, { ...item, isSelected, labelWidth: labelWidth.current })}
           </Box>
         )
       })}
