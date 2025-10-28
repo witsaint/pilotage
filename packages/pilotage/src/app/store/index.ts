@@ -1,7 +1,32 @@
 import type { Message, MessageContent, MessageMeta, MessageType } from '@/types/message'
+import type { Suggestion } from '@/ui/box-input'
+import { useStore } from '@/utils/use-store'
 
-let messages: Message<MessageType>[] = []
-let listeners: (() => void)[] = []
+const inputInfo: {
+  placeholder: string
+  suggestions: Suggestion[]
+} = {
+  placeholder: 'Enter your input',
+  suggestions: [],
+}
+
+export const { subscribe: subscribeInputInfo, get: getInputInfo, set: emitInputInfo } = useStore<typeof inputInfo>(inputInfo)
+
+export function setInputInfo(): void {
+  emitInputInfo({
+    placeholder: 'Enter your input1',
+    suggestions: [
+      {
+        title: 'test',
+        value: 'test',
+      },
+    ],
+  })
+}
+
+const messages: Message<MessageType>[] = []
+
+export const { subscribe: subscribeMessages, get: getMessages, set: setMessages } = useStore<Message<MessageType>[]>(messages)
 
 export function addMessage<T extends MessageType>(
   content: MessageContent[T],
@@ -16,23 +41,7 @@ export function addMessage<T extends MessageType>(
     metadata: config?.metadata,
     props: config?.props,
   }
-  messages = [...messages, message]
-  emitChange()
-}
-
-export function subscribe(listener: () => void): () => void {
-  listeners = [...listeners, listener]
-  return () => {
-    listeners = listeners.filter(l => l !== listener)
-  }
-}
-
-export function getMessages(): Message<MessageType>[] {
-  return messages
-}
-
-function emitChange(): void {
-  for (const listener of listeners) {
-    listener()
-  }
+  setMessages((messages) => {
+    messages.push(message)
+  })
 }

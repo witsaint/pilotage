@@ -5,13 +5,13 @@ import { Level, LEVELCOLOR_MAP } from '@/config/level'
 import { RefTextInput, type RefTextInputHandle } from './ref-text-input'
 import SelectInput from './select'
 
-interface Suggestion {
+export interface Suggestion {
   title: string
   desc?: string
   value: string
 }
 
-interface BoxInputProps {
+export interface BoxInputProps {
   onSubmit?: (value: string) => void
   placeholder?: string
   suggestions?: Suggestion[] // 建议列表

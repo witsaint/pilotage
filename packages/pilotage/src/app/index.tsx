@@ -4,13 +4,14 @@ import React, { useSyncExternalStore } from 'react'
 import { MessageType } from '@/types/message'
 import { BoxInput } from '@/ui/box-input'
 import { HistoryComponent } from './compt/history'
-import { addMessage, getMessages, subscribe } from './store'
+import { addMessage, getInputInfo, getMessages, setInputInfo, subscribeInputInfo, subscribeMessages } from './store'
 
 export function RootApp(): React.JSX.Element {
-  const messages = useSyncExternalStore(subscribe, getMessages)
-
+  const messages = useSyncExternalStore(subscribeMessages, getMessages)
+  const inputInfo = useSyncExternalStore(subscribeInputInfo, getInputInfo)
   const onSubmit = (value: string): void => {
     addMessage(value, MessageType.String)
+    setInputInfo()
   }
 
   return (
@@ -22,18 +23,9 @@ export function RootApp(): React.JSX.Element {
       ))}
       <BoxInput
         onSubmit={onSubmit}
-        placeholder="输入命令 (如: /init)"
+        placeholder={inputInfo.placeholder}
         suggestions={[
-          {
-            title: '/init',
-            desc: '初始化',
-            value: 'init',
-          },
-          {
-            title: '/progress',
-            desc: '进度条',
-            value: 'progress',
-          },
+          ...inputInfo.suggestions,
         ]}
         maxSuggestions={8}
       />
