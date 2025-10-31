@@ -1,9 +1,10 @@
 import packageJson from '../package.json'
+import { registryCommands } from './commands'
 import { bootstrap } from './core'
 import { patchConsoleLog } from './core/console'
 import { renderBanner } from './ui/banner'
-import { sizeManager } from './utils/size-manager'
 import { setupGlobalErrorHandlers } from './utils/error-handler'
+import { sizeManager } from './utils/size-manager'
 
 /**
  * initialize the size manager
@@ -20,9 +21,14 @@ renderBanner({
 })
 
 /**
- * 设置全局错误处理器（最先执行）
+ * setup global error handlers
  */
 setupGlobalErrorHandlers()
+
+/**
+ * registry commands
+ */
+registryCommands()
 
 /**
  * patch console.log method to ui

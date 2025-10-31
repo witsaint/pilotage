@@ -97,7 +97,7 @@ export function BoxInput({
         borderStyle="single"
         padding={0}
         borderTopColor={LEVELCOLOR_MAP[Level.DEFAULT]}
-        borderDimColor={LEVELCOLOR_MAP[Level.DEFAULT]}
+        borderDimColor={false}
         borderBottomDimColor
         borderLeftDimColor
         borderRightDimColor

@@ -1,4 +1,5 @@
 import process from 'node:process'
+import figures from 'figures'
 
 export interface ErrorHandlerOptions {
   /**
@@ -39,7 +40,7 @@ export function handleError(error: unknown, options: ErrorHandlerOptions = {}): 
   } = options
 
   const errorMessage = customFormat(error)
-  console.error(`\n❌ Error: ${errorMessage}\n`)
+  console.error(`\n ${figures.cross} Error: ${errorMessage}\n`)
 
   if (exit) {
     process.exit(exitCode)
@@ -52,12 +53,19 @@ export function handleError(error: unknown, options: ErrorHandlerOptions = {}): 
 export function setupGlobalErrorHandlers(options: ErrorHandlerOptions = {}): void {
   // 处理未捕获的同步异常
   process.on('uncaughtException', (error: Error) => {
-    handleError(error, { ...options, exit: true })
+    const shouldExit = options.exit ?? false
+    handleError(error, { ...options, exit: shouldExit })
+    // 如果设置不退出，确保不会因为未处理的异常导致进程退出
+    // Node.js 在设置了 uncaughtException 监听器后，默认不会退出
+    // 但为了明确，我们根据配置决定是否退出
   })
 
   // 处理未捕获的 Promise 拒绝
   process.on('unhandledRejection', (reason: unknown) => {
-    handleError(reason, { ...options, exit: true })
+    const shouldExit = options.exit ?? false
+    handleError(reason, { ...options, exit: shouldExit })
+    // unhandledRejection 默认不会导致进程退出（Node 15+）
+    // 但如果需要，可以根据配置退出
   })
 }
 
