@@ -10,13 +10,6 @@ import type {
 import type { CommandMeta } from './_types'
 
 export { define, defineCommands } from './_types'
-import { Text } from 'ink'
-import { addMessage } from '@/app/store'
-import { MessageType } from '@/types/message'
-
-export function addUserCommand(): void {
-  addMessage(<Text color="cyan">addUserCommand</Text>, MessageType.Ele)
-}
 
 export function createRegistry<Defs extends CommandDefs>(_defs: Defs): CommandRegistryApi<Defs> {
   type Keys = keyof Defs

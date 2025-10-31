@@ -3,6 +3,7 @@ import { bootstrap } from './core'
 import { patchConsoleLog } from './core/console'
 import { renderBanner } from './ui/banner'
 import { sizeManager } from './utils/size-manager'
+import { setupGlobalErrorHandlers } from './utils/error-handler'
 
 /**
  * initialize the size manager
@@ -17,6 +18,11 @@ sizeManager.init({
 renderBanner({
   version: packageJson.version,
 })
+
+/**
+ * 设置全局错误处理器（最先执行）
+ */
+setupGlobalErrorHandlers()
 
 /**
  * patch console.log method to ui
