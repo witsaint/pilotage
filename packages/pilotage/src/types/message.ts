@@ -29,3 +29,8 @@ export interface Message<T extends MessageType = MessageType.String, C = Message
 export interface ComponentPropBase<T extends MessageType = MessageType.String, C = MessageContent[T]> {
   content: C
 }
+
+export interface MessageConfig {
+  metadata?: MessageMeta
+  props?: Record<string, any>
+}

@@ -1,3 +1,4 @@
+import type { MessageConfig, MessageContent } from '@/types/message'
 import figures from 'figures'
 import { Box, Text } from 'ink'
 import { addMessage } from '@/app/store'
@@ -55,4 +56,19 @@ export function addUserMsgCmd(params: addUserMsgParams): void {
     </Box>,
     MessageType.Ele,
   )
+}
+
+interface addMessageParams<T extends MessageType> {
+  message: MessageContent[T]
+  type: T
+  config?: MessageConfig
+}
+export const addMessageDef = define<addMessageParams<MessageType>, void>({
+  title: 'addMessage',
+  description: 'Add a message to the console',
+  scope: 'internal',
+})
+
+export function addMessageCmd<T extends MessageType>(params: addMessageParams<T>): void {
+  addMessage(params.message, params.type, params.config)
 }

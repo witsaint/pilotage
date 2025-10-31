@@ -3,10 +3,11 @@ import process from 'node:process'
 import { render } from 'ink'
 import { RootApp } from '@/app/index'
 import { addMessage } from '@/app/store'
+import { registry } from '@/commands'
 import { hasInitialized } from '@/config/root-config'
-import { MessageType } from '@/types/message'
-import { setStatus } from '@/events/status'
 import { Status } from '@/config/status'
+import { setStatus } from '@/events/status'
+import { MessageType } from '@/types/message'
 
 /**
  * 初始化应用
@@ -23,19 +24,18 @@ export function initialize(): void {
   else {
     listItems.push({
       title: 'Pilotage is not Starteds yet',
-      desc: 'Please set your channel by /use <channel> the default channel is Gitlab',
-    })
-    listItems.push({
-      title: '/use <channel>',
-      titleColor: 'cyan',
-      desc: 'Set your channel by /use <channel> the default channel is Gitlab',
+      desc: 'Please configure the pilotage first',
     })
     setStatus(Status.NOT_STARTED)
   }
 
-  addMessage(listItems, MessageType.List, {
-    props: {
-      style: 'none',
+  registry.execute('addMessage', {
+    message: listItems,
+    type: MessageType.List,
+    config: {
+      props: {
+        style: 'none',
+      },
     },
   })
 }

@@ -1,20 +1,14 @@
-import { Status } from '@/config/status'
-import { EventEmitter } from 'events'
+import { EventEmitter } from 'node:events'
 import { setInputInfo } from '@/app/store'
+import { Status } from '@/config/status'
 
 export const statusEmitter = new EventEmitter()
 
 statusEmitter.on('status', (status: Status) => {
   if (status === Status.NOT_STARTED) {
     setInputInfo({
-      placeholder: 'Please set your channel by /use',
-      suggestions: [
-        {
-          title: '/use',
-          value: '/use',
-          desc: 'Set your channel by /use <channel> the default channel is Gitlab',
-        },
-      ],
+      placeholder: 'Please configure the pilotage first',
+      suggestions: [],
     })
   }
 })

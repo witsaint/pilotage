@@ -1,5 +1,5 @@
 import type { InputInfo } from '@/types/input'
-import type { Message, MessageContent, MessageMeta, MessageType } from '@/types/message'
+import type { Message, MessageConfig, MessageContent, MessageMeta, MessageType } from '@/types/message'
 import { useStore } from '@/utils/use-store'
 
 const inputInfo: InputInfo = {
@@ -20,7 +20,7 @@ export const { subscribe: subscribeMessages, get: getMessages, set: setMessages 
 export function addMessage<T extends MessageType>(
   content: MessageContent[T],
   type: T,
-  config?: { metadata?: MessageMeta, props?: Record<string, any> },
+  config?: MessageConfig,
 ): void {
   const message: Message<T> = {
     id: crypto.randomUUID(),
