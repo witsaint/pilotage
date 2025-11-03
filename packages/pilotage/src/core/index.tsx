@@ -2,7 +2,6 @@ import type { ListItem } from '@/ui/list'
 import process from 'node:process'
 import { render } from 'ink'
 import { RootApp } from '@/app/index'
-import { addMessage } from '@/app/store'
 import { registry } from '@/commands'
 import { hasInitialized } from '@/config/root-config'
 import { Status } from '@/config/status'
@@ -24,7 +23,7 @@ export function initialize(): void {
   else {
     listItems.push({
       title: 'Pilotage is not Starteds yet',
-      desc: 'Please configure the pilotage first',
+      desc: 'Please configure the pilotage first by /config',
     })
     setStatus(Status.NOT_STARTED)
   }
