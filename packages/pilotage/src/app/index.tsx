@@ -1,16 +1,17 @@
 import type { Message } from '@/types/message'
 import { Box } from 'ink'
 import React, { useSyncExternalStore } from 'react'
-import { registry } from '@/commands'
 import { BoxInput } from '@/ui/box-input'
+import { inputRouter } from '@/utils/input-router'
 import { HistoryComponent } from './compt/history'
 import { getInputInfo, getMessages, subscribeInputInfo, subscribeMessages } from './store'
 
 export function RootApp(): React.JSX.Element {
   const messages = useSyncExternalStore(subscribeMessages, getMessages)
   const inputInfo = useSyncExternalStore(subscribeInputInfo, getInputInfo)
+
   const onSubmit = (value: string): void => {
-    registry.execute('addUserMsg', { message: value })
+    inputRouter.route(value)
   }
 
   return (
